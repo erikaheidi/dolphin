@@ -23,9 +23,6 @@ class Dolphin
     /** @var string API endpoint for droplets */
     protected static $API_GET_DROPLETS = "https://api.digitalocean.com/v2/droplets";
 
-    /** @var string cache directory */
-    protected static $CACHE_DIR = "cache";
-
     /**
      * Dolphin constructor.
      * @param Config $config
@@ -87,11 +84,11 @@ class Dolphin
      */
     protected function query($endpoint, array $custom_headers = [], $use_cache = false)
     {
-        $cache_file = __DIR__ . '/../' . self::$CACHE_DIR . '/' . md5($endpoint) . '.json';
+        $cache_file = __DIR__ . '/../' . $this->config->CACHE_DIR . '/' . md5($endpoint) . '.json';
 
         if ($use_cache) {
             // is it still valid?
-            if (is_file($cache_file) && (time() - filemtime($cache_file) < 60*60)) {
+            if (is_file($cache_file) && (time() - filemtime($cache_file) < 60*$this->config->CACHE_EXPIRY)) {
                 return file_get_contents($cache_file);
             }
         }
