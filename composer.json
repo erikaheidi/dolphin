@@ -1,0 +1,20 @@
+{
+    "name": "eheidi/dolphin",
+    "type": "project",
+    "description": "Dynamically generates Ansible inventories",
+
+    "authors": [
+        {
+            "name": "Erika Heidi",
+            "email": "hello@eheidi.pw"
+        }
+    ],
+    
+    "license": "MIT",
+
+    "autoload": {
+        "psr-4": {
+            "Dolphin\\": "src/"
+        }
+    }
+}
