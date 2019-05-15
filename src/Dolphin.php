@@ -14,40 +14,40 @@ class Dolphin
     /** @var  Config $config */
     protected $config;
 
-    /** @var  Droplet[] $droplets */
-    protected $droplets;
-
     /** @var  Inventory $inventory */
     protected $inventory;
+
+    /** @var  Droplet[] $droplets*/
+    protected $droplets;
 
     /** @var string API endpoint for droplets */
     protected static $API_GET_DROPLETS = "https://api.digitalocean.com/v2/droplets";
 
+    /** @var string cache directory */
+    protected static $CACHE_DIR = "cache";
 
+    /**
+     * Dolphin constructor.
+     * @param Config $config
+     */
     public function __construct(Config $config)
     {
         $this->config = $config;
     }
 
-    public function addDroplet(Droplet $droplet)
-    {
-        $this->droplets[] = $droplet;
-    }
-
-    public function getDroplets()
-    {
-        return $this->droplets;
-    }
-
+    /**
+     * @return null
+     */
     public function buildInventory()
     {
-        $response = json_decode($this->query(self::$API_GET_DROPLETS), true);
+        $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
 
         if (!isset($response['droplets'])) return null;
 
         $hosts = [];
         foreach ($response['droplets'] as $droplet_info) {
             $droplet = new Droplet($droplet_info);
+            $this->droplets[] = $droplet;
             $hosts[] = new Host($droplet->name, $droplet->networks['v4'][0]['ip_address'], $droplet->tags);
         }
 
@@ -85,8 +85,17 @@ class Dolphin
      * @param array $custom_headers optional custom headers
      * @return mixed
      */
-    protected function query($endpoint, array $custom_headers = [])
+    protected function query($endpoint, array $custom_headers = [], $use_cache = false)
     {
+        $cache_file = __DIR__ . '/../' . self::$CACHE_DIR . '/' . md5($endpoint) . '.json';
+
+        if ($use_cache) {
+            // is it still valid?
+            if (is_file($cache_file) && (time() - filemtime($cache_file) < 60*60)) {
+                return file_get_contents($cache_file);
+            }
+        }
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -97,6 +106,10 @@ class Dolphin
 
         $response = curl_exec($curl);
         curl_close($curl);
+
+        if ($use_cache) {
+            file_put_contents($cache_file, $response);
+        }
 
         return $response;
     }
