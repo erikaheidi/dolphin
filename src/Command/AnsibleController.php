@@ -43,4 +43,10 @@ class AnsibleController extends CommandController
             'inventory' => 'buildInventory',
         ];
     }
+
+    public function printHelp()
+    {
+        echo "Ansible controller";
+    }
+
 }

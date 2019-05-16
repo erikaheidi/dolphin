@@ -38,7 +38,7 @@ class CommandRegistry
         }
 
         /** @var CommandController $controller */
-        $controller = $this->controllers[$namespace];
+        $controller = $this->getController($namespace);
 
         return $controller->$command($arguments);
     }
@@ -51,6 +51,20 @@ class CommandRegistry
         foreach (glob($autoload_dir . '/*Controller.php') as $filepath) {
             $this->loadController($filepath);
         }
+    }
+
+    public function getRegisteredCommands()
+    {
+        return $this->command_map;
+    }
+
+    /**
+     * @param string $namespace
+     * @return CommandController
+     */
+    public function getController($namespace)
+    {
+        return $this->controllers[$namespace];
     }
 
     /**
@@ -80,8 +94,8 @@ class CommandRegistry
      */
     protected function registerCommands($namespace, array $commands)
     {
-        foreach ($commands as $key => $command) {
-            $this->registerCommand($namespace, $key, $command);
+        foreach ($commands as $command => $callback) {
+            $this->registerCommand($namespace, $command, $callback);
         }
     }
 
@@ -93,7 +107,7 @@ class CommandRegistry
      */
     protected function registerCommand($namespace, $command, $callback)
     {
-        $this->command_map[$namespace] = [ $command => $callback ];
+        $this->command_map[$namespace][$command] = $callback;
     }
 
     /**

@@ -5,10 +5,7 @@
 
 namespace Dolphin;
 
-use Dolphin\Ansible\Group;
-use Dolphin\Ansible\Host;
-use Dolphin\Ansible\Inventory;
-use Dolphin\DigitalOcean\Droplet;
+use Dolphin\Provider\DigitalOcean\Droplet;
 use Dolphin\Exception\InvalidArgumentCountException;
 
 class Dolphin
@@ -18,9 +15,6 @@ class Dolphin
 
     /** @var  CommandRegistry $command_registry */
     protected $command_registry;
-
-    /** @var  Inventory $inventory */
-    protected $inventory;
 
     /** @var  Droplet[] $droplets */
     protected $droplets;
@@ -48,13 +42,17 @@ class Dolphin
      */
     public function runCommand($argc, array $argv)
     {
-        if ($argc < 3) {
+        if ($argc < 2) {
             throw new InvalidArgumentCountException("Invalid number of arguments.");
         }
 
-        $namespace = $argv[1];
-        $command = $argv[2];
+        $namespace = isset($argv[1]) ? $argv[1] : null;
+        $command = isset($argv[2]) ? $argv[2] : null;
         $arguments = array_slice($argv, 3);
+
+        if ($command == null || $namespace == null) {
+            $this->printHelp($namespace);
+        }
 
         return $this->command_registry->runCommand($namespace, $command, $arguments);
     }
@@ -67,14 +65,6 @@ class Dolphin
         $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
 
         return isset($response['droplets']) ? $response['droplets'] : null;
-    }
-
-    /**
-     * @return null
-     */
-    public function buildInventory()
-    {
-
     }
 
     /**
@@ -91,14 +81,6 @@ class Dolphin
     public function setConfig($config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * @return Inventory
-     */
-    public function getInventory()
-    {
-        return $this->inventory;
     }
 
     /**
@@ -146,5 +128,35 @@ class Dolphin
         $headers[] = "Authorization: Bearer $token";
 
         return $headers;
+    }
+    
+    public function printHelp($namespace = null)
+    {
+        if ($namespace) {
+            $controller = $this->command_registry->getController($namespace);
+            $controller->printHelp();
+            exit;
+        }
+
+        echo "Usage: ./dolphin [command] [sub-command] [params]\n\n";
+
+        $this->printCommands();
+    }
+
+    /**
+     * Print commands usage
+     */
+    public function printCommands()
+    {
+        foreach ($this->command_registry->getRegisteredCommands() as $namespace => $commands) {
+            echo "./dolphin $namespace [ ";
+            $first = true;
+            foreach ($commands as $command => $callback) {
+                if (!$first) echo " | $command"; else echo $command;
+                $first = false;
+            }
+
+            echo " ]\n";
+        }
     }
 }

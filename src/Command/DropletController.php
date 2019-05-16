@@ -26,6 +26,11 @@ class DropletController extends CommandController
         }
     }
 
+    public function listDropletIPs()
+    {
+        echo "JUST TESTING";
+    }
+
     /**
      * @return array
      */
@@ -33,7 +38,13 @@ class DropletController extends CommandController
     {
         return [
             'list' => 'listDroplets',
+            'listIps' => 'listDropletIPs'
         ];
+    }
+
+    public function printHelp()
+    {
+        echo "Droplet controller";
     }
 
 }

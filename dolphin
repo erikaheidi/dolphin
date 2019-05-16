@@ -5,33 +5,13 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Dolphin\Dolphin;
 use Dolphin\Config;
-use Dolphin\Command\CommandController;
 
 $config = new Config(require __DIR__ . '/config.php');
 $dolphin = new Dolphin($config);
 
 if ($argc < 2) {
-    printHelp();
+    $dolphin->printHelp();
     exit;
 }
 
 $dolphin->runCommand($argc, $argv);
-
-
-/*switch ($command) {
-
-    case "ansible-inventory":
-        $dolphin->buildInventory();
-
-        echo $dolphin->getInventory()->output();
-        break;
-
-    default:
-        printHelp();
-}
-*/
-
-function printHelp()
-{
-    echo "Usage: ./dolphin inventory\n";
-}

@@ -54,4 +54,7 @@ abstract class CommandController
      * @return array
      */
     public abstract function getCommandMap();
+
+    public abstract function printHelp();
+
 }
