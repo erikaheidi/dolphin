@@ -19,6 +19,9 @@ class Dolphin
     /** @var  Droplet[] $droplets */
     protected $droplets;
 
+    /** @var  CliPrint CLI Printer */
+    protected $printer;
+
     /** @var string API endpoint for droplets */
     protected static $API_GET_DROPLETS = "https://api.digitalocean.com/v2/droplets";
 
@@ -31,6 +34,7 @@ class Dolphin
         $this->config = $config;
         $this->command_registry = new CommandRegistry($this);
         $this->command_registry->autoloadNamespaces(__DIR__ . '/Command');
+        $this->printer = new CliPrint();
     }
 
     /**
@@ -129,7 +133,10 @@ class Dolphin
 
         return $headers;
     }
-    
+
+    /**
+     * @param null $namespace
+     */
     public function printHelp($namespace = null)
     {
         if ($namespace) {
@@ -138,7 +145,8 @@ class Dolphin
             exit;
         }
 
-        echo "Usage: ./dolphin [command] [sub-command] [params]\n\n";
+        $this->printer->printBanner();
+        $this->printer->out("Usage: ./dolphin [command] [sub-command] [params]\n\n", "info");
 
         $this->printCommands();
     }
@@ -148,15 +156,19 @@ class Dolphin
      */
     public function printCommands()
     {
+        $help_text = "";
+
         foreach ($this->command_registry->getRegisteredCommands() as $namespace => $commands) {
-            echo "./dolphin $namespace [ ";
+            $help_text .= $this->printer->format("./dolphin $namespace [ ", "info");
             $first = true;
             foreach ($commands as $command => $callback) {
-                if (!$first) echo " | $command"; else echo $command;
+                if (!$first) $help_text .= " | $command"; else $help_text .= $command;
                 $first = false;
             }
 
-            echo " ]\n";
+            $help_text .= " ]\n";
         }
+
+
     }
 }
