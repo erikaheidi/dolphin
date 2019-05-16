@@ -8,16 +8,22 @@ namespace Dolphin;
 use Dolphin\Ansible\Group;
 use Dolphin\Ansible\Host;
 use Dolphin\Ansible\Inventory;
+use Dolphin\Command\CommandRegistry;
+use Dolphin\DigitalOcean\Droplet;
+use Dolphin\Exception\InvalidArgumentCountException;
 
 class Dolphin
 {
     /** @var  Config $config */
     protected $config;
 
+    /** @var  CommandRegistry $command_registry */
+    protected $command_registry;
+
     /** @var  Inventory $inventory */
     protected $inventory;
 
-    /** @var  Droplet[] $droplets*/
+    /** @var  Droplet[] $droplets */
     protected $droplets;
 
     /** @var string API endpoint for droplets */
@@ -30,6 +36,29 @@ class Dolphin
     public function __construct(Config $config)
     {
         $this->config = $config;
+        $this->command_registry = new CommandRegistry($this, __DIR__ . '/Command');
+    }
+
+
+    public function runCommand($argc, array $argv)
+    {
+        if ($argc < 3) {
+            throw new InvalidArgumentCountException("Invalid number of arguments.");
+        }
+
+        $namespace = $argv[1];
+        $command = $argv[2];
+        $arguments = array_slice($argv, 3);
+
+        return $this->command_registry->runCommand($namespace, $command, $arguments);
+    }
+
+
+    public function getDroplets()
+    {
+        $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
+
+        return isset($response['droplets']) ? $response['droplets'] : null;
     }
 
     /**
@@ -37,20 +66,21 @@ class Dolphin
      */
     public function buildInventory()
     {
-        $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
+        $droplets = $this->getDroplets();
 
-        if (!isset($response['droplets'])) return null;
+        if ($droplets !== null) {
 
-        $hosts = [];
-        foreach ($response['droplets'] as $droplet_info) {
-            $droplet = new Droplet($droplet_info);
-            $this->droplets[] = $droplet;
-            $hosts[] = new Host($droplet->name, $droplet->networks['v4'][0]['ip_address'], $droplet->tags);
+            $hosts = [];
+            foreach ($droplets as $droplet_info) {
+                $droplet = new Droplet($droplet_info);
+                $this->droplets[] = $droplet;
+                $hosts[] = new Host($droplet->name, $droplet->networks['v4'][0]['ip_address'], $droplet->tags);
+            }
+
+            $groups[] = new Group($this->config->DEFAULT_SERVER_GROUP, $hosts);
+
+            $this->inventory = new Inventory($groups);
         }
-
-        $groups[] = new Group($this->config->DEFAULT_SERVER_GROUP, $hosts);
-
-        $this->inventory = new Inventory($groups);
     }
 
     /**
