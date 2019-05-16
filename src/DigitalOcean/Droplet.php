@@ -3,7 +3,7 @@
  * "Magic" Class to hold Droplet Json values
  */
 
-namespace Dolphin;
+namespace Dolphin\DigitalOcean;
 
 
 class Droplet
