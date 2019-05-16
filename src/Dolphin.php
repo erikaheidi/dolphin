@@ -8,7 +8,6 @@ namespace Dolphin;
 use Dolphin\Ansible\Group;
 use Dolphin\Ansible\Host;
 use Dolphin\Ansible\Inventory;
-use Dolphin\Command\CommandRegistry;
 use Dolphin\DigitalOcean\Droplet;
 use Dolphin\Exception\InvalidArgumentCountException;
 
@@ -36,10 +35,17 @@ class Dolphin
     public function __construct(Config $config)
     {
         $this->config = $config;
-        $this->command_registry = new CommandRegistry($this, __DIR__ . '/Command');
+        $this->command_registry = new CommandRegistry($this);
+        $this->command_registry->autoloadNamespaces(__DIR__ . '/Command');
     }
 
-
+    /**
+     * @param $argc
+     * @param array $argv
+     * @return mixed
+     * @throws Exception\CommandNotFoundException
+     * @throws InvalidArgumentCountException
+     */
     public function runCommand($argc, array $argv)
     {
         if ($argc < 3) {
@@ -53,7 +59,9 @@ class Dolphin
         return $this->command_registry->runCommand($namespace, $command, $arguments);
     }
 
-
+    /**
+     * @return null
+     */
     public function getDroplets()
     {
         $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
@@ -66,21 +74,7 @@ class Dolphin
      */
     public function buildInventory()
     {
-        $droplets = $this->getDroplets();
 
-        if ($droplets !== null) {
-
-            $hosts = [];
-            foreach ($droplets as $droplet_info) {
-                $droplet = new Droplet($droplet_info);
-                $this->droplets[] = $droplet;
-                $hosts[] = new Host($droplet->name, $droplet->networks['v4'][0]['ip_address'], $droplet->tags);
-            }
-
-            $groups[] = new Group($this->config->DEFAULT_SERVER_GROUP, $hosts);
-
-            $this->inventory = new Inventory($groups);
-        }
     }
 
     /**

@@ -6,10 +6,10 @@
 
 namespace Dolphin\Command;
 
-use Dolphin\DigitalOcean\Droplet;
-use Dolphin\Dolphin;
+use Dolphin\CommandController;
+use Dolphin\Provider\DigitalOcean\Droplet;
 
-class DropletCommand extends CommandController
+class DropletController extends CommandController
 {
     
     public function listDroplets(array $arguments = [])

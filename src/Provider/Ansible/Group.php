@@ -3,7 +3,7 @@
  * Ansible Group Model
  */
 
-namespace Dolphin\Ansible;
+namespace Dolphin\Provider\Ansible;
 
 class Group
 {

@@ -3,7 +3,7 @@
  * Ansible Host Model
  */
 
-namespace Dolphin\Ansible;
+namespace Dolphin\Provider\Ansible;
 
 class Host
 {

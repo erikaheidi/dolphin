@@ -4,8 +4,7 @@
  * Interface for Command Controllers
  */
 
-namespace Dolphin\Command;
-use Dolphin\Dolphin;
+namespace Dolphin;
 
 abstract class CommandController
 {
@@ -22,9 +21,9 @@ abstract class CommandController
         echo $string . "\n";
     }
 
-    protected function getDolphin()
+    public function getConfig($name)
     {
-        return $this->dolphin;
+        return $this->dolphin->getConfig()->$name;
     }
 
     /**
@@ -34,6 +33,14 @@ abstract class CommandController
     public function setup()
     {
         return null;
+    }
+
+    /**
+     * @return Dolphin
+     */
+    protected function getDolphin()
+    {
+        return $this->dolphin;
     }
 
     /**
