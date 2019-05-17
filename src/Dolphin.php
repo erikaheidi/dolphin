@@ -6,7 +6,9 @@
 namespace Dolphin;
 
 use Dolphin\Exception\InvalidArgumentCountException;
+use Dolphin\Provider\CLIPrinter;
 use Dolphin\Provider\DigitalOcean;
+use Dolphin\Provider\FileCache;
 
 class Dolphin
 {
@@ -16,11 +18,14 @@ class Dolphin
     /** @var  CommandRegistry $command_registry */
     protected $command_registry;
 
-    /** @var  CliPrint CLI Printer */
+    /** @var  CLIPrinter CLI Printer */
     protected $printer;
 
     /** @var  DigitalOcean */
     protected $do;
+
+    /** @var  FileCache */
+    protected $cache;
     
     
     /**
@@ -32,8 +37,16 @@ class Dolphin
         $this->setConfig($config);
         $this->command_registry = new CommandRegistry($this);
         $this->command_registry->autoloadNamespaces(__DIR__ . '/Command');
-        $this->printer = new CliPrint();
-        $this->do = new DigitalOcean($this->getConfig());
+
+        // Simple Cache
+        $cache_dir = __DIR__ . '/../' . $this->getConfig()->CACHE_DIR;
+        $this->cache = new FileCache($cache_dir, $this->getConfig()->CACHE_EXPIRY);
+
+        // CLI printer
+        $this->printer = new CLIPrinter();
+
+        // DO API
+        $this->do = new DigitalOcean($this->getConfig(), $this->cache);
     }
 
     /**
@@ -85,7 +98,7 @@ class Dolphin
     }
 
     /**
-     * @return CliPrint
+     * @return CLIPrinter
      */
     public function getPrinter()
     {

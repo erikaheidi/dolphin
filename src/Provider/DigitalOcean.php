@@ -6,12 +6,14 @@
 namespace Dolphin\Provider;
 
 use Dolphin\Config;
-use Dolphin\Provider\DigitalOcean\Droplet;
 
 class DigitalOcean
 {
     /** @var  Config */
     protected $config;
+
+    /** @var  FileCache */
+    protected $cache;
 
     /** @var string API endpoint for droplets */
     protected static $API_GET_DROPLETS = "https://api.digitalocean.com/v2/droplets";
@@ -19,10 +21,12 @@ class DigitalOcean
     /**
      * DigitalOcean constructor.
      * @param Config $config
+     * @param FileCache $cache
      */
-    public function __construct(Config $config)
+    public function __construct(Config $config, FileCache $cache)
     {
         $this->config = $config;
+        $this->cache = $cache;
     }
 
     /**
@@ -30,24 +34,22 @@ class DigitalOcean
      */
     public function getDroplets()
     {
-        $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
+        $response = json_decode($this->query(self::$API_GET_DROPLETS, []), true);
 
         return isset($response['droplets']) ? $response['droplets'] : null;
     }
+
     /**
      * @param string $endpoint API endpoint
      * @param array $custom_headers optional custom headers
      * @return mixed
      */
-    public function query($endpoint, array $custom_headers = [], $use_cache = false)
+    public function query($endpoint, array $custom_headers = [])
     {
-        $cache_file = __DIR__ . '/../' . $this->config->CACHE_DIR . '/' . md5($endpoint) . '.json';
+        $cached = $this->cache->getCachedUnlessExpired($endpoint);
 
-        if ($use_cache) {
-            // is it still valid?
-            if (is_file($cache_file) && (time() - filemtime($cache_file) < 60*$this->config->CACHE_EXPIRY)) {
-                return file_get_contents($cache_file);
-            }
+        if ($cached !== null) {
+            return $cached;
         }
 
         $curl = curl_init();
@@ -61,9 +63,7 @@ class DigitalOcean
         $response = curl_exec($curl);
         curl_close($curl);
 
-        if ($use_cache) {
-            file_put_contents($cache_file, $response);
-        }
+        $this->cache->save($response, $endpoint);
 
         return $response;
     }
