@@ -5,6 +5,7 @@
 
 namespace Dolphin;
 
+use Dolphin\Exception\CommandNotFoundException;
 use Dolphin\Exception\InvalidArgumentCountException;
 use Dolphin\Provider\CLIPrinter;
 use Dolphin\Provider\DigitalOcean;
@@ -74,7 +75,13 @@ class Dolphin
             exit;
         }
 
-        return $this->command_registry->runCommand($namespace, $command, $arguments);
+        try {
+            return $this->command_registry->runCommand($namespace, $command, $arguments);
+        } catch (CommandNotFoundException $e) {
+            $this->getPrinter()->out("Command not found.", "error_alt");
+        }
+
+        return null;
     }
 
     /**

@@ -32,7 +32,7 @@ class HelpController extends CommandController
             $help_text .= $this->getPrinter()->format("$namespace", "unicorn_alt");
 
             foreach ($commands as $command => $callback) {
-                $help_text .= $this->getPrinter()->format(" - $command", "default");
+                $help_text .= $this->getPrinter()->format(" + $command", "default");
             }
 
             $help_text .= "\n";
