@@ -17,13 +17,25 @@ class DropletController extends CommandController
         $droplets = $this->getDolphin()->getDO()->getDroplets();
 
         if ($droplets === null) {
-            $this->output("No Droplets found.", "message");
+            $this->output("No Droplets found.", "error");
         }
+
+        $print_table[] = [ 'ID', 'NAME', 'IP', 'REGION', 'SIZE'];
         
         foreach ($droplets as $droplet_info) {
             $droplet = new Droplet($droplet_info);
-            $this->output($droplet->name);
+            $print_table[] = [
+                $droplet->id,
+                $droplet->name,
+                $droplet->networks['v4'][0]['ip_address'],
+                $droplet->region['slug'],
+                $droplet->size_slug,
+            ];
         }
+
+        $this->getPrinter()->newline();
+        $this->getPrinter()->printTable($print_table);
+        $this->getPrinter()->newline();
     }
 
     public function listDropletIPs()

@@ -50,7 +50,7 @@ class CLIPrinter
             $bg = ';' . $style_colors[1];
         }
 
-        $output = sprintf("\e[%s%sm%s\e[0m\n", $style_colors[0], $bg, $message);
+        $output = sprintf("\e[%s%sm%s\e[0m", $style_colors[0], $bg, $message);
 
         return $output;
     }
@@ -63,6 +63,11 @@ class CLIPrinter
     public function out($message, $style = "info")
     {
         echo $this->format($message, $style);
+    }
+
+    public function newline()
+    {
+        echo "\n";
     }
 
     public function printBanner()
@@ -92,5 +97,50 @@ class CLIPrinter
     public function printUsage()
     {
         $this->out("Usage: ./dolphin [command] [sub-command] [params]", "unicorn");
+    }
+
+    public function printTable(array $table, $min_col_size = 10, $with_header = true)
+    {
+        $first = true;
+
+        foreach ($table as $index => $row) {
+
+            $style = "default";
+            if ($first && $with_header) {
+                $style = "info";
+            }
+
+            $this->printRow($table, $index, $style, $min_col_size);
+            $first = false;
+        }
+    }
+
+    public function printRow(array $table, $row, $style = "default", $min_col_size = 5)
+    {
+
+        foreach ($table[$row] as $column => $table_cell) {
+            $col_size = $this->calculateColumnSize($column, $table, $min_col_size);
+
+            $this->printCell($table_cell, $style, $col_size);
+        }
+
+        $this->out("\n");
+    }
+
+    protected function printCell($table_cell, $style = "default", $col_size = 5)
+    {
+        $table_cell = str_pad($table_cell, $col_size);
+        $this->out($table_cell, $style);
+    }
+
+    protected function calculateColumnSize($column, array $table, $min_col_size = 5)
+    {
+        $size = $min_col_size;
+
+        foreach ($table as $row) {
+            $size = strlen($row[$column]) > $size ? strlen($row[$column]) + 2 : $size;
+        }
+
+        return $size;
     }
 }
