@@ -65,11 +65,6 @@ class CLIPrinter
         echo $this->format($message, $style);
     }
 
-    public function formatHeader($title)
-    {
-
-    }
-
     public function printBanner()
     {
         $header = '
@@ -92,5 +87,10 @@ class CLIPrinter
         ';
 
         $this->out($header, "info");
+    }
+
+    public function printUsage()
+    {
+        $this->out("Usage: ./dolphin [command] [sub-command] [params]", "unicorn");
     }
 }

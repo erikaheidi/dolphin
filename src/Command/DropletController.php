@@ -42,7 +42,7 @@ class DropletController extends CommandController
         ];
     }
 
-    public function printHelp()
+    public function defaultCommand()
     {
         $this->output('./dolphin droplet [ list | listIp ]', "info");
     }

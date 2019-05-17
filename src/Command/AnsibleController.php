@@ -44,7 +44,7 @@ class AnsibleController extends CommandController
         ];
     }
 
-    public function printHelp()
+    public function defaultCommand()
     {
         echo "Ansible controller";
     }

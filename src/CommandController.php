@@ -26,6 +26,11 @@ abstract class CommandController
         return $this->dolphin->getConfig()->$name;
     }
 
+    public function getPrinter()
+    {
+        return $this->dolphin->getPrinter();
+    }
+
     /**
      * Executed once when the Controller is created
      * @return null
@@ -44,7 +49,7 @@ abstract class CommandController
     }
 
     /**
-     * Must be implemented. Should return the command map for a command controller, in this format:
+     * Should return the command map for a command controller, in this format:
      * [
      *  'command1' => 'methodName1',
      *  'command2' => 'methodName2',
@@ -53,8 +58,16 @@ abstract class CommandController
      *
      * @return array
      */
-    public abstract function getCommandMap();
+    public function getCommandMap()
+    {
+        return [];
+    }
 
-    public abstract function printHelp();
+    /**
+     * This is executed when no additional subcommands or parameters are passed along to a command.
+     * ex.: ./dolphin help
+     * @return mixed
+     */
+    public abstract function defaultCommand();
 
 }

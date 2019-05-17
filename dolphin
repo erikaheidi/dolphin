@@ -9,9 +9,4 @@ use Dolphin\Config;
 $config = new Config(require __DIR__ . '/config.php');
 $dolphin = new Dolphin($config);
 
-if ($argc < 2) {
-    $dolphin->printHelp();
-    exit;
-}
-
 $dolphin->runCommand($argc, $argv);
