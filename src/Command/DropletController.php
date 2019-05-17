@@ -38,11 +38,6 @@ class DropletController extends CommandController
         $this->getPrinter()->newline();
     }
 
-    public function listDropletIPs()
-    {
-        echo "JUST TESTING";
-    }
-
     /**
      * @return array
      */
@@ -50,13 +45,13 @@ class DropletController extends CommandController
     {
         return [
             'list' => 'listDroplets',
-            'listIps' => 'listDropletIPs'
         ];
     }
 
     public function defaultCommand()
     {
-        $this->output('./dolphin droplet [ list | listIp ]', "info");
+        $this->output("Usage: ./dolphin droplet list", "unicorn");
+        $this->getPrinter()->newline();
     }
 
 }

@@ -21,6 +21,8 @@
 
 Dolphin is a simple command-line PHP application to manage DigitalOcean servers. It's a WORK IN PROGRESS.
 
+For the moment, there are only a few read-only commands available. More to come.
+
 ## Requirements
 
 - PHP 7+ cli
@@ -78,22 +80,54 @@ return $dolphin_config = [
 Now you can execute Dolphin with:
 
 ```
-./dolphin
+./dolphin [command] [sub-command]
 ```
 
 
-### Commands
-Currently available commands:
+## Commands
+There are currently two commands available:
+
+### droplet
+
+`./dolphin droplet list`
+
+This will show a list with your DigitalOcean droplets (ID, name, IP, region and size).
+
+```
+ID        NAME                        IP              REGION    SIZE
+140295122 ubuntu-1804-01              188.166.115.68  ams3      s-1vcpu-2gb
+140295123 ubuntu-1804-02              188.166.123.245 ams3      s-1vcpu-2gb
+140295124 ubuntu-1804-03              174.138.13.97   ams3      s-1vcpu-2gb
+142352633 mysql-wordpress             165.22.254.246  sgp1      s-2vcpu-4gb
+142807570 ubuntu-s-1vcpu-1gb-ams3-01  167.99.217.247  ams3      s-1vcpu-1gb
+```
+
+### ansible
 
 `./dolphin ansible inventory`
 
-This will output a dynamically generated Ansible inventory to your terminal.
+This will output to your terminal a dynamically generated Ansible inventory based on your DigitalOcean droplets.
+
+Output:
+
+```
+[servers]
+ubuntu-1804-01 ansible_host=188.166.115.68
+ubuntu-1804-02 ansible_host=188.166.123.245
+ubuntu-1804-03 ansible_host=174.138.13.97
+mysql-wordpress ansible_host=165.22.254.246
+ubuntu-s-1vcpu-1gb-ams3-01 ansible_host=167.99.217.247
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+```
 
 To save the contents to a file, run:
 
 ```
 ./dolphin ansible inventory > inventory
 ```
+
 
 Then you can run Ansible with:
 

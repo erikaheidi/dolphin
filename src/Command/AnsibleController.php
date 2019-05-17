@@ -46,7 +46,8 @@ class AnsibleController extends CommandController
 
     public function defaultCommand()
     {
-        echo "Ansible controller";
+        $this->output("Usage: ./dolphin ansible inventory", "unicorn");
+        $this->getPrinter()->newline();
     }
 
 }
