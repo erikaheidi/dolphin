@@ -18,7 +18,7 @@ class AnsibleController extends CommandController
 
     public function buildInventory()
     {
-        $droplets = $this->dolphin->getDroplets();
+        $droplets = $this->dolphin->getDO()->getDroplets();
 
         if ($droplets !== null) {
 

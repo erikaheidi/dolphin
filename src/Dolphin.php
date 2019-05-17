@@ -5,8 +5,8 @@
 
 namespace Dolphin;
 
-use Dolphin\Provider\DigitalOcean\Droplet;
 use Dolphin\Exception\InvalidArgumentCountException;
+use Dolphin\Provider\DigitalOcean;
 
 class Dolphin
 {
@@ -16,25 +16,24 @@ class Dolphin
     /** @var  CommandRegistry $command_registry */
     protected $command_registry;
 
-    /** @var  Droplet[] $droplets */
-    protected $droplets;
-
     /** @var  CliPrint CLI Printer */
     protected $printer;
 
-    /** @var string API endpoint for droplets */
-    protected static $API_GET_DROPLETS = "https://api.digitalocean.com/v2/droplets";
-
+    /** @var  DigitalOcean */
+    protected $do;
+    
+    
     /**
      * Dolphin constructor.
      * @param Config $config
      */
     public function __construct(Config $config)
     {
-        $this->config = $config;
+        $this->setConfig($config);
         $this->command_registry = new CommandRegistry($this);
         $this->command_registry->autoloadNamespaces(__DIR__ . '/Command');
         $this->printer = new CliPrint();
+        $this->do = new DigitalOcean($this->getConfig());
     }
 
     /**
@@ -62,21 +61,19 @@ class Dolphin
     }
 
     /**
-     * @return null
-     */
-    public function getDroplets()
-    {
-        $response = json_decode($this->query(self::$API_GET_DROPLETS, [], true), true);
-
-        return isset($response['droplets']) ? $response['droplets'] : null;
-    }
-
-    /**
      * @return Config
      */
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * @return DigitalOcean
+     */
+    public function getDO()
+    {
+        return $this->do;
     }
 
     /**
@@ -88,50 +85,11 @@ class Dolphin
     }
 
     /**
-     * @param string $endpoint API endpoint
-     * @param array $custom_headers optional custom headers
-     * @return mixed
+     * @return CliPrint
      */
-    protected function query($endpoint, array $custom_headers = [], $use_cache = false)
+    public function getPrinter()
     {
-        $cache_file = __DIR__ . '/../' . $this->config->CACHE_DIR . '/' . md5($endpoint) . '.json';
-
-        if ($use_cache) {
-            // is it still valid?
-            if (is_file($cache_file) && (time() - filemtime($cache_file) < 60*$this->config->CACHE_EXPIRY)) {
-                return file_get_contents($cache_file);
-            }
-        }
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => array_merge($custom_headers, $this->getDefaultHeaders()),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => $endpoint,
-        ]);
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        if ($use_cache) {
-            file_put_contents($cache_file, $response);
-        }
-
-        return $response;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getDefaultHeaders()
-    {
-        $token = $this->config->DO_API_TOKEN;
-
-        $headers[] = "Content-type: application/json";
-        $headers[] = "Authorization: Bearer $token";
-
-        return $headers;
+        return $this->printer;
     }
 
     /**
@@ -146,29 +104,29 @@ class Dolphin
         }
 
         $this->printer->printBanner();
-        $this->printer->out("Usage: ./dolphin [command] [sub-command] [params]\n\n", "info");
+        $this->printer->out("Usage: ./dolphin [command] [sub-command] [params]", "unicorn");
 
-        $this->printCommands();
+        $this->printCheatSheet();
     }
 
     /**
      * Print commands usage
      */
-    public function printCommands()
+    public function printCheatSheet()
     {
-        $help_text = "";
+        $help_text = "\n\n";
+        $help_text .= $this->printer->format("Command Namespaces", 'info_alt');
 
         foreach ($this->command_registry->getRegisteredCommands() as $namespace => $commands) {
-            $help_text .= $this->printer->format("./dolphin $namespace [ ", "info");
-            $first = true;
+            $help_text .= $this->printer->format("$namespace\n", "success");
+
             foreach ($commands as $command => $callback) {
-                if (!$first) $help_text .= " | $command"; else $help_text .= $command;
-                $first = false;
+                $help_text .= $this->printer->format($command, "info");
             }
 
-            $help_text .= " ]\n";
+            $help_text .= "\n";
         }
 
-
+        echo $help_text;
     }
 }

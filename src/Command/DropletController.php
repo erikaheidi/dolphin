@@ -14,7 +14,7 @@ class DropletController extends CommandController
     
     public function listDroplets(array $arguments = [])
     {
-        $droplets = $this->getDolphin()->getDroplets();
+        $droplets = $this->getDolphin()->getDO()->getDroplets();
 
         if ($droplets === null) {
             $this->output("No Droplets found.", "message");
@@ -44,7 +44,7 @@ class DropletController extends CommandController
 
     public function printHelp()
     {
-        echo "Droplet controller";
+        $this->output('./dolphin droplet [ list | listIp ]', "info");
     }
 
 }

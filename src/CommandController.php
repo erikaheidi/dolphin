@@ -18,7 +18,7 @@ abstract class CommandController
 
     public function output($string, $style = "default")
     {
-        echo $string . "\n";
+        $this->dolphin->getPrinter()->out($string, $style);
     }
 
     public function getConfig($name)
