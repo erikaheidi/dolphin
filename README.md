@@ -21,7 +21,7 @@
 
 Dolphin is a simple command-line PHP application to manage DigitalOcean servers. It's a WORK IN PROGRESS.
 
-For the moment, there are only a few read-only commands available. More to come.
+For the moment, there are only a few commands available. More to come.
 
 ## Requirements
 
