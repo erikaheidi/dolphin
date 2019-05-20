@@ -70,6 +70,9 @@ class CLIPrinter
         echo "\n";
     }
 
+    /**
+     * Prints Dolphin Banner
+     */
     public function printBanner()
     {
         $header = '
@@ -94,11 +97,19 @@ class CLIPrinter
         $this->out($header, "info");
     }
 
+    /**
+     * Prints Doplhin basic usage
+     */
     public function printUsage()
     {
         $this->out("Usage: ./dolphin [command] [sub-command] [params]", "unicorn");
     }
 
+    /**
+     * @param array $table
+     * @param int $min_col_size
+     * @param bool $with_header
+     */
     public function printTable(array $table, $min_col_size = 10, $with_header = true)
     {
         $first = true;
@@ -107,7 +118,7 @@ class CLIPrinter
 
             $style = "default";
             if ($first && $with_header) {
-                $style = "info";
+                $style = "info_alt";
             }
 
             $this->printRow($table, $index, $style, $min_col_size);
@@ -115,6 +126,12 @@ class CLIPrinter
         }
     }
 
+    /**
+     * @param array $table
+     * @param int $row
+     * @param string $style
+     * @param int $min_col_size
+     */
     public function printRow(array $table, $row, $style = "default", $min_col_size = 5)
     {
 
@@ -127,12 +144,23 @@ class CLIPrinter
         $this->out("\n");
     }
 
+    /**
+     * @param string $table_cell
+     * @param string $style
+     * @param int $col_size
+     */
     protected function printCell($table_cell, $style = "default", $col_size = 5)
     {
         $table_cell = str_pad($table_cell, $col_size);
         $this->out($table_cell, $style);
     }
 
+    /**
+     * @param $column
+     * @param array $table
+     * @param int $min_col_size
+     * @return int
+     */
     protected function calculateColumnSize($column, array $table, $min_col_size = 5)
     {
         $size = $min_col_size;

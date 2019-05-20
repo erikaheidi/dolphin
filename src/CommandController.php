@@ -70,4 +70,15 @@ abstract class CommandController
      */
     public abstract function defaultCommand();
 
+    public function parseArgs(array $arguments)
+    {
+        $params = [];
+
+        foreach ($arguments as $argument) {
+            $tuple = explode("=", $argument);
+            $params[$tuple[0]] = isset($tuple[1]) ? $tuple[1] : null;
+        }
+
+        return $params;
+    }
 }
