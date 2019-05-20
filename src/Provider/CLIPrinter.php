@@ -95,6 +95,7 @@ class CLIPrinter
         ';
 
         $this->out($header, "info");
+        $this->out("\n");
     }
 
     /**
@@ -102,7 +103,8 @@ class CLIPrinter
      */
     public function printUsage()
     {
-        $this->out("Usage: ./dolphin [command] [sub-command] [params]", "unicorn");
+        $this->out("Usage: ./dolphin [command] [sub-command] [params]\n", "unicorn");
+        $this->out("For help, use ./dolphin help\n", "info");
     }
 
     /**

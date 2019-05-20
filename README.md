@@ -25,8 +25,10 @@ For the moment, there are only a few read-only commands available. More to come.
 
 ## Requirements
 
-- PHP 7+ cli
+- PHP (cli)
 - Composer
+- Curl
+- Valid DigitalOcean API Key (R+W)
 
 ## Installation
 
@@ -55,24 +57,26 @@ composer install
 Copy the contents of `config_sample.php` to `config.php` and adjust the values accordingly:
 
 ```
-
 return $dolphin_config = [
 
 
     // DigitalOcean API Token
     'DO_API_TOKEN' => 'YOUR_DIGITALOCEAN_API_TOKEN',
 
-    //Default group
+    //Default Ansible server group
     'DEFAULT_SERVER_GROUP' => 'servers',
-
-    ///Enables local cache
-    'LOCAL_CACHE_ENABLED' => true,
 
     //Cache location relative to doc root */
     'CACHE_DIR' => 'cache',
 
     //Cache expiry time in minutes
     'CACHE_EXPIRY' => 60,
+
+    //Default Droplet Settings
+    'D_REGION' => 'nyc3',
+    'D_IMAGE'  => 'ubuntu-18-04-x64',
+    'D_SIZE'   => 's-1vcpu-1gb',
+    'D_TAGS'   => [ 'dolphin' ],
 
 ];
 ```
@@ -84,12 +88,13 @@ Now you can execute Dolphin with:
 ```
 
 
-## Commands
-There are currently two commands available:
+## Available Commands
 
-### droplet
+### List Droplets
 
-`./dolphin droplet list`
+```command
+./dolphin droplet list
+```
 
 This will show a list with your DigitalOcean droplets (ID, name, IP, region and size).
 
@@ -102,7 +107,24 @@ ID        NAME                        IP              REGION    SIZE
 142807570 ubuntu-s-1vcpu-1gb-ams3-01  167.99.217.247  ams3      s-1vcpu-1gb
 ```
 
-### ansible
+### Create a New Droplet
+Uses default options from your config file, but you can override any of the query parameters.
+Parameters should be passed as `name=value` items. Only the **name** parameter is mandatory.
+
+```
+./dolphin droplet create name=MyDropletName
+```
+
+
+### Destroy a Droplet
+You can obtain the ID of a Droplet by running `droplet list` to list all your droplets.
+
+```
+./dolphin droplet destroy DROPLET_ID
+```
+
+
+### Output dynamic Ansible Inventory
 
 `./dolphin ansible inventory`
 

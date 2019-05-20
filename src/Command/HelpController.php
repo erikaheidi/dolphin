@@ -23,22 +23,22 @@ class HelpController extends CommandController
     {
         $printer = $this->getPrinter();
         
-        $help_text = "\n";
-        $help_text .= $printer->format("Commands & Sub-commands", 'info');
+        $printer->newline();
+        $printer->out("Commands & Sub-commands\n\n", 'info');
 
         $registered_commands = $this->getDolphin()->getCommandRegistry()->getRegisteredCommands();
 
         foreach ($registered_commands as $namespace => $commands) {
-            $help_text .= $this->getPrinter()->format("$namespace", "unicorn_alt");
+            $printer->out("$namespace", "unicorn_alt");
+            $printer->newline();
 
             foreach ($commands as $command => $callback) {
-                $help_text .= $this->getPrinter()->format(" + $command", "default");
+                $printer->out(" + $command", "default");
+                $printer->newline();
             }
 
-            $help_text .= "\n";
+           $printer->newline();
         }
-
-        echo $help_text;
     }
 
 }
