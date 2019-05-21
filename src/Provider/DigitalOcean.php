@@ -19,6 +19,7 @@ class DigitalOcean
 
     /** @var string API endpoint for droplets */
     protected static $API_DROPLET = "https://api.digitalocean.com/v2/droplets";
+    protected static $API_DROPLET_SINGLE = "https://api.digitalocean.com/v2/droplet";
 
     /**
      * DigitalOcean constructor.
@@ -49,6 +50,19 @@ class DigitalOcean
         return isset($response_body['droplets']) ? $response_body['droplets'] : null;
     }
 
+    public function getDroplet($droplet_id, $force_update = false)
+    {
+        $response = $this->get(self::$API_DROPLET . '/' . $droplet_id, [], $force_update);
+
+        if (!in_array($response['code'], [200, 202, 204])) {
+            throw new APIException("Invalid response code.");
+        }
+
+        $response_body = json_decode($response['body'], true);
+
+        return isset($response_body['droplet']) ? $response_body['droplet'] : null;
+    }
+
     /**
      * Creates a new droplet.
      * @param array $params Droplet parameters. The only mandatory item is 'name'.
@@ -77,6 +91,12 @@ class DigitalOcean
         return $response;
     }
 
+    /**
+     * Destroys a Droplet
+     * @param $droplet_id
+     * @return bool
+     * @throws APIException
+     */
     public function destroyDroplet($droplet_id)
     {
         $response = $this->delete(self::$API_DROPLET . '/' . $droplet_id);

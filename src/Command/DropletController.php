@@ -8,13 +8,14 @@ namespace Dolphin\Command;
 
 use Dolphin\CommandController;
 use Dolphin\Exception\APIException;
-use Dolphin\Exception\InvalidArgumentCountException;
 use Dolphin\Provider\DigitalOcean\Droplet;
 
 class DropletController extends CommandController
 {
     /**
      * Lists droplets
+     * usage: ./dolphin droplet list
+     *
      * @param array $arguments
      * @throws APIException
      */
@@ -56,7 +57,45 @@ class DropletController extends CommandController
     }
 
     /**
-     * Creates a new droplet
+     * Gets detailed information about a droplet.
+     * usage: ./dolphin droplet info DROPLET_ID [force-update]
+     *
+     * @param array $arguments
+     */
+    public function infoDroplet(array $arguments)
+    {
+        $params = $this->parseArgs($arguments);
+        $force_update = array_key_exists('force-update', $params) ? true : false;
+
+        $droplet_id = $arguments[0];
+        if (!$droplet_id) {
+            $this->getPrinter()->newline();
+            $this->getPrinter()->out("Error: You must provide the droplet ID.", "error_alt");
+            $this->getPrinter()->newline();
+            exit;
+        }
+
+        $this->getPrinter()->newline();
+        $this->getPrinter()->out(sprintf("Fetching Droplet info for ID %s...", $droplet_id), "alt");
+
+        try {
+            $droplet = $this->getDolphin()->getDO()->getDroplet($droplet_id, $force_update);
+
+            $this->getPrinter()->newline();
+            print_r($droplet);
+
+        } catch (APIException $e) {
+            $this->getPrinter()->newline();
+            $this->getPrinter()->out("An API error occurred.", "error_alt");
+            $this->getPrinter()->newline();
+            exit;
+        }
+    }
+
+    /**
+     * Creates a new droplet using default options from config.php
+     * usage: ./dolphin droplet create name=MY_DROPLET_NAME [api_param2=api_value2 api_param3=api_value3]
+     *
      * @param array $arguments
      * @throws \Dolphin\Exception\MissingArgumentException
      */
@@ -106,13 +145,21 @@ class DropletController extends CommandController
 
     /**
      * Deletes a Droplet.
+     * usage: ./dolphin destroy DROPLET_ID
+     *
      * @param array $arguments
      * @throws APIException
      */
     public function destroyDroplet(array $arguments)
     {
         $droplet_id = $arguments[0];
-        
+        if (!$droplet_id) {
+            $this->getPrinter()->newline();
+            $this->getPrinter()->out("Error: You must provide the droplet ID.", "error_alt");
+            $this->getPrinter()->newline();
+            exit;
+        }
+
         $this->getPrinter()->newline();
         $this->getPrinter()->out(sprintf("Destroying Droplet ID %s ...", $droplet_id), 'info_alt');
         $this->getPrinter()->newline();
@@ -128,9 +175,10 @@ class DropletController extends CommandController
     public function getCommandMap()
     {
         return [
-            'list'   => 'listDroplets',
-            'create' => 'createDroplet',
-            'destroy' => 'destroyDroplet'
+            'list'    => 'listDroplets',
+            'create'  => 'createDroplet',
+            'destroy' => 'destroyDroplet',
+            'info'    => 'infoDroplet',
         ];
     }
 

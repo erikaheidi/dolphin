@@ -47,6 +47,9 @@ class Inventory
         }
     }
 
+    /**
+     * @return string
+     */
     public function output()
     {
         $inventory = "";
@@ -67,6 +70,9 @@ class Inventory
         return $inventory;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->output();
