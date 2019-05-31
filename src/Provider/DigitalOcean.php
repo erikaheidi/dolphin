@@ -17,6 +17,9 @@ class DigitalOcean
     /** @var  FileCache */
     protected $cache;
 
+    /** @var  string/json */
+    protected $last_response;
+
     /** @var string API endpoint for droplets */
     protected static $API_DROPLET = "https://api.digitalocean.com/v2/droplets";
     protected static $API_DROPLET_SINGLE = "https://api.digitalocean.com/v2/droplet";
@@ -32,7 +35,13 @@ class DigitalOcean
         $this->cache = $cache;
     }
 
+    public function getLastResponse()
+    {
+        return $this->last_response;
+    }
+
     /**
+     * Gets all droplets
      * @return array | null
      * @param bool $force_update Whether force a cache update or not
      * @throws APIException
@@ -50,6 +59,13 @@ class DigitalOcean
         return isset($response_body['droplets']) ? $response_body['droplets'] : null;
     }
 
+    /**
+     * Gets information about a single droplet
+     * @param $droplet_id
+     * @param bool $force_update
+     * @return null
+     * @throws APIException
+     */
     public function getDroplet($droplet_id, $force_update = false)
     {
         $response = $this->get(self::$API_DROPLET . '/' . $droplet_id, [], $force_update);
@@ -77,9 +93,10 @@ class DigitalOcean
         }
         
         $params = array_merge([
-            'region' => $this->config->D_REGION,
-            'size'   => $this->config->D_SIZE,
-            'image'  => $this->config->D_IMAGE,
+            'region'   => $this->config->D_REGION,
+            'size'     => $this->config->D_SIZE,
+            'image'    => $this->config->D_IMAGE,
+            'ssh_keys' => $this->config->D_SSH_KEYS,
         ], $params);
 
         $response = $this->post(self::$API_DROPLET, $params);
@@ -133,11 +150,11 @@ class DigitalOcean
             CURLOPT_URL => $endpoint,
         ]);
 
-        $response = $this->getQueryResponse($curl);
+        $this->last_response = $this->getQueryResponse($curl);
 
-        $this->cache->save($response['body'], $endpoint);
+        $this->cache->save($this->last_response['body'], $endpoint);
 
-        return $response;
+        return $this->last_response;
     }
 
     /**
@@ -161,7 +178,9 @@ class DigitalOcean
             CURLOPT_TIMEOUT => 120,
         ]);
 
-        return $this->getQueryResponse($curl);
+        $this->last_response = $this->getQueryResponse($curl);
+
+        return $this->last_response;
     }
 
     /**
@@ -182,7 +201,9 @@ class DigitalOcean
             #CURLINFO_HEADER_OUT => true,
         ]);
 
-        return $this->getQueryResponse($curl);
+        $this->last_response = $this->getQueryResponse($curl);
+
+        return $this->last_response;
     }
 
     /**

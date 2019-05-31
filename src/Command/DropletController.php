@@ -88,6 +88,10 @@ class DropletController extends CommandController
             $this->getPrinter()->newline();
             $this->getPrinter()->out("An API error occurred.", "error_alt");
             $this->getPrinter()->newline();
+            $this->getPrinter()->out("Response Info:");
+            $this->getPrinter()->newline();
+
+            print_r($this->getDolphin()->getDO()->getLastResponse());
             exit;
         }
     }
@@ -115,10 +119,13 @@ class DropletController extends CommandController
 
         try {
             $response = $this->getDolphin()->getDO()->createDroplet($params);
+            $this->getPrinter()->newline();
             $this->getPrinter()->out(
-                sprintf("Your new droplet %s was successfully created. Here's some info:", $params['name']),
-                'success_alt'
+                sprintf("Your new droplet \"%s\" was successfully created. Please notice it might take a few minutes for the network to be ready.
+                Here's some info:", $params['name']),
+                'success'
             );
+            $this->getPrinter()->newline();
 
             $response_body = json_decode($response['body'], true);
             $droplet = new Droplet($response_body['droplet']);
@@ -138,6 +145,11 @@ class DropletController extends CommandController
 
         } catch (APIException $e) {
             $this->getPrinter()->out("An API error has ocurred.", "error_alt");
+            $this->getPrinter()->newline();
+            $this->getPrinter()->out("Response Info:");
+            $this->getPrinter()->newline();
+
+            print_r($this->getDolphin()->getDO()->getLastResponse());
         }
 
         $this->getPrinter()->newline();

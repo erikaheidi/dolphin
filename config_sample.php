@@ -24,4 +24,10 @@ return $dolphin_config = [
     'D_SIZE'   => 's-1vcpu-1gb',
     'D_TAGS'   => [ 'dolphin' ],
 
+    // Optional - SSH key(s) to be added in new droplets. Uncomment and add your own key(s).
+    // NOTICE: You should use IDs or fingerprints as obtained from the DO API or from the web panel.
+    #'D_SSH_KEYS' => [
+    #    'KEY_FINGERPRINT_OR_ID'
+    #],
+
 ];
