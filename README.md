@@ -115,6 +115,28 @@ ID        NAME                        IP              REGION    SIZE
 142807570 ubuntu-s-1vcpu-1gb-ams3-01  167.99.217.247  ams3      s-1vcpu-1gb
 ```
 
+To force a cache update, include the flag `--force-update`:
+
+```
+./dolphin droplet list --force-update
+```
+
+
+### Get Information About a Droplet
+
+```
+./dolphin droplet info DROPLET_ID
+```
+
+Output will be a JSON will all the available information about that droplet.
+
+To force a cache update, include the flag `--force-update`:
+
+```
+./dolphin droplet info DROPLET_ID --force-update
+```
+
+
 ### Create a New Droplet
 Uses default options from your config file, but you can override any of the API query parameters.
 Parameters should be passed as `name=value` items. Only the **name** parameter is mandatory.
@@ -128,6 +150,8 @@ Let's say you want to use a custom region and droplet size:
 ```
 ./dolphin droplet create name=MyDropletName size=s-2vcpu-4gb region=nyc2
 ```
+
+Check the [DigitalOCean API documentation](https://developers.digitalocean.com/documentation/v2/#create-a-new-droplet) for more information on all the parameters you can use.
 
 ### Destroy a Droplet
 You can obtain the ID of a Droplet by running `droplet list` to list all your droplets.
