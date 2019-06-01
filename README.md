@@ -78,6 +78,12 @@ return $dolphin_config = [
     'D_SIZE'   => 's-1vcpu-1gb',
     'D_TAGS'   => [ 'dolphin' ],
 
+    // Optional - SSH key(s) to be added in new droplets. Uncomment and add your own key(s).
+    // NOTICE: You should use IDs or fingerprints as obtained from the DO API or from the web panel.
+    #'D_SSH_KEYS' => [
+    #    'KEY_FINGERPRINT_OR_ID'
+    #],
+
 ];
 ```
 
@@ -88,7 +94,9 @@ Now you can execute Dolphin with:
 ```
 
 
-## Available Commands
+## Droplet Commands
+
+The following commands can be used to manage droplets.
 
 ### List Droplets
 
@@ -108,13 +116,18 @@ ID        NAME                        IP              REGION    SIZE
 ```
 
 ### Create a New Droplet
-Uses default options from your config file, but you can override any of the query parameters.
+Uses default options from your config file, but you can override any of the API query parameters.
 Parameters should be passed as `name=value` items. Only the **name** parameter is mandatory.
 
 ```
 ./dolphin droplet create name=MyDropletName
 ```
 
+Let's say you want to use a custom region and droplet size:
+
+```
+./dolphin droplet create name=MyDropletName size=s-2vcpu-4gb region=nyc2
+```
 
 ### Destroy a Droplet
 You can obtain the ID of a Droplet by running `droplet list` to list all your droplets.
@@ -124,27 +137,90 @@ You can obtain the ID of a Droplet by running `droplet list` to list all your dr
 ```
 
 
-### Output dynamic Ansible Inventory
+## Ansible Commands
 
-`./dolphin ansible inventory`
+The following commands can be used to facilitate running Ansible on your droplets.
 
-This will output to your terminal a dynamically generated Ansible inventory based on your DigitalOcean droplets.
+### Using the included Dynamic Inventory Script
+
+The included `hosts.php` script works as a dynamic inventory script that can be used directly with Ansible commands.
+This is the most convenient way to use Ansible with Dolphin.
+
+
+```
+ansible all -m ping -i hosts.php
+```
+
+
+### Building a static Inventory File
+
+You can generate dynamic inventories in INI or JSON format. The inventory is dynamically built based on your current active droplets.
+
+To generate a JSON inventory, run:
+
+`./dolphin ansible inventory:json`
+
+Output:
+
+```
+{
+    "servers": {
+        "hosts": [
+            "docker02",
+            "docker03",
+            "docker04",
+            "test1"
+        ]
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "servers"
+        ]
+    },
+    "_meta": {
+        "hostvars": {
+            "docker02": {
+                "ansible_host": "134.209.82.17",
+                "ansible_python_interpreter": "/usr/bin/python3"
+            },
+            "docker03": {
+                "ansible_host": "134.209.205.231",
+                "ansible_python_interpreter": "/usr/bin/python3"
+            },
+            "docker04": {
+                "ansible_host": "188.166.46.60",
+                "ansible_python_interpreter": "/usr/bin/python3"
+            },
+            "test1": {
+                "ansible_host": "188.166.16.148",
+                "ansible_python_interpreter": "/usr/bin/python3"
+            }
+        }
+    }
+}
+
+```
+
+
+To generate an INI inventory, run:
+
+`./dolphin ansible inventory:ini`
 
 Output:
 
 ```
 [servers]
-ubuntu-1804-01 ansible_host=188.166.115.68
-ubuntu-1804-02 ansible_host=188.166.123.245
-ubuntu-1804-03 ansible_host=174.138.13.97
-mysql-wordpress ansible_host=165.22.254.246
-ubuntu-s-1vcpu-1gb-ams3-01 ansible_host=167.99.217.247
+docker02 ansible_host=134.209.82.17
+docker03 ansible_host=134.209.205.231
+docker04 ansible_host=188.166.46.60
+test1 ansible_host=188.166.16.148
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
 ```
 
-To save the contents to a file, run:
+If you want to use this as a static inventory file:
 
 ```
 ./dolphin ansible inventory > inventory
