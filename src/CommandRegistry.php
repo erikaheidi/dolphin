@@ -33,7 +33,7 @@ class CommandRegistry
     {
         $command = $this->getCommand($namespace, $command_name);
 
-        if ($command === null) {
+        if ($command == null) {
             throw new CommandNotFoundException("Command not found.");
         }
 
@@ -64,7 +64,7 @@ class CommandRegistry
      */
     public function getController($namespace)
     {
-        return $this->controllers[$namespace];
+        return key_exists($namespace, $this->controllers) ? $this->controllers[$namespace] : null;
     }
 
     /**
@@ -117,7 +117,11 @@ class CommandRegistry
      */
     protected function getCommand($namespace, $command)
     {
-        return isset($this->command_map[$namespace][$command]) ? $this->command_map[$namespace][$command] : null;
+        if (key_exists($namespace, $this->command_map)) {
+            return isset($this->command_map[$namespace][$command]) ? $this->command_map[$namespace][$command] : null;
+        }
+
+        return null;
     }
 
     /**

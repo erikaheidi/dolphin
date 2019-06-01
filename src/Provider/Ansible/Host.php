@@ -81,4 +81,9 @@ class Host
     {
         return sprintf("%s ansible_host=%s\n", $this->getName(), $this->getIp());
     }
+
+    public function __toString()
+    {
+        return $this->getIp();
+    }
 }

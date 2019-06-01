@@ -71,6 +71,13 @@ class Dolphin
 
         if ($command == null) {
             $controller = $this->command_registry->getController($namespace);
+            if ($controller === null) {
+                $this->getPrinter()->newline();
+                $this->getPrinter()->out("Command not found.", "error_alt");
+                $this->getPrinter()->newline();
+                exit;
+            }
+
             $controller->defaultCommand();
             exit;
         }
@@ -78,7 +85,9 @@ class Dolphin
         try {
             return $this->command_registry->runCommand($namespace, $command, $arguments);
         } catch (CommandNotFoundException $e) {
+            $this->getPrinter()->newline();
             $this->getPrinter()->out("Command not found.", "error_alt");
+            $this->getPrinter()->newline();
         }
 
         return null;

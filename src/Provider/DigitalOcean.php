@@ -96,6 +96,7 @@ class DigitalOcean
             'region'   => $this->config->D_REGION,
             'size'     => $this->config->D_SIZE,
             'image'    => $this->config->D_IMAGE,
+            'tags'     => $this->config->D_TAGS,
             'ssh_keys' => $this->config->D_SSH_KEYS,
         ], $params);
 

@@ -47,6 +47,46 @@ class Inventory
         }
     }
 
+    public function getJson()
+    {
+        $inventory = [];
+        $groups = [ 'ungrouped' ];
+        $hostvars = [];
+        $hosts = [];
+        $all = [];
+
+        /** @var Group $group */
+        foreach ($this->getGroups() as $group) {
+
+            $groups[] = $group->getName();
+            /** @var Host $host */
+            foreach ($group->getHosts() as $host) {
+                $hostvars[$host->getName()] = [
+                    'ansible_host' => $host->getIp(),
+                    'ansible_python_interpreter' => "/usr/bin/python3"
+                ];
+
+                $hosts[] = $host->getName();
+            }
+
+            $inventory[$group->getName()] = [
+                'hosts' => $hosts,
+            ];
+
+            $hosts = [];
+        }
+
+        $inventory['all'] = [
+            "children" =>  $groups
+        ];
+
+        $inventory['_meta'] = [
+            'hostvars'  => $hostvars,
+        ];
+
+        return json_encode($inventory, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
     /**
      * @return string
      */

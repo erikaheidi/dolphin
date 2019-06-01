@@ -74,4 +74,16 @@ class Group
         return sprintf("[%s]\n", $this->getName());
     }
 
+    public function getInventoryHosts()
+    {
+        $hosts = [];
+
+        /** @var Host $host */
+        foreach ($this->getHosts() as $host) {
+            $hosts[] = $host->getIp();
+        }
+
+        return $hosts;
+    }
+
 }

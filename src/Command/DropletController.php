@@ -25,7 +25,7 @@ class DropletController extends CommandController
 
         $params = $this->parseArgs($arguments);
 
-        $force_update = array_key_exists('force-update', $params) ? true : false;
+        $force_update = array_key_exists('--force-update', $params) ? true : false;
 
         if ($force_update) {
             $this->getPrinter()->out("Fetching contents from API...\n");
@@ -38,13 +38,14 @@ class DropletController extends CommandController
             exit;
         }
 
-        $print_table[] = [ 'ID', 'NAME', 'IP', 'REGION', 'SIZE'];
+        $print_table[] = [ 'ID', 'NAME', 'IMAGE', 'IP', 'REGION', 'SIZE'];
         
         foreach ($droplets as $droplet_info) {
             $droplet = new Droplet($droplet_info);
             $print_table[] = [
                 $droplet->id,
                 $droplet->name,
+                $droplet->image['slug'],
                 $droplet->networks['v4'][0]['ip_address'],
                 $droplet->region['slug'],
                 $droplet->size_slug,
@@ -65,7 +66,7 @@ class DropletController extends CommandController
     public function infoDroplet(array $arguments)
     {
         $params = $this->parseArgs($arguments);
-        $force_update = array_key_exists('force-update', $params) ? true : false;
+        $force_update = array_key_exists('--force-update', $params) ? true : false;
 
         $droplet_id = $arguments[0];
         if (!$droplet_id) {
@@ -114,15 +115,14 @@ class DropletController extends CommandController
         }
 
         $this->getPrinter()->newline();
-        $this->getPrinter()->out("Creating new Droplet...", 'info_alt');
+        $this->getPrinter()->out("Creating new Droplet...", 'alt');
         $this->getPrinter()->newline();
 
         try {
             $response = $this->getDolphin()->getDO()->createDroplet($params);
             $this->getPrinter()->newline();
             $this->getPrinter()->out(
-                sprintf("Your new droplet \"%s\" was successfully created. Please notice it might take a few minutes for the network to be ready.
-                Here's some info:", $params['name']),
+                sprintf("Your new droplet \"%s\" was successfully created. Please notice it might take a few minutes for the network to be ready.\nHere's some info:", $params['name']),
                 'success'
             );
             $this->getPrinter()->newline();
