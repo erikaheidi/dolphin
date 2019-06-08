@@ -54,7 +54,7 @@ composer install
 
 ## Usage
 
-Copy the contents of `config_sample.php` to `config.php` and adjust the values accordingly:
+Edit the contents of `config.php` and adjust the values accordingly:
 
 ```
 return $dolphin_config = [
