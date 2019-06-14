@@ -23,6 +23,9 @@ class DigitalOcean
     /** @var string API endpoint for droplets */
     protected static $API_DROPLET = "https://api.digitalocean.com/v2/droplets";
     protected static $API_DROPLET_SINGLE = "https://api.digitalocean.com/v2/droplet";
+    protected static $API_IMAGES = "https://api.digitalocean.com/v2/images";
+    protected static $API_REGIONS = "https://api.digitalocean.com/v2/regions";
+    protected static $API_SIZES = "https://api.digitalocean.com/v2/sizes";
 
     /**
      * DigitalOcean constructor.
@@ -41,12 +44,67 @@ class DigitalOcean
     }
 
     /**
-     * Gets all droplets
-     * @return array | null
-     * @param bool $force_update Whether force a cache update or not
+     * @param int $force_update
+     * @param string $type
+     * @return null
      * @throws APIException
      */
-    public function getDroplets($force_update = false)
+    public function getImages($force_update = 0, $type = "distribution")
+    {
+        $response = $this->get(self::$API_IMAGES . "?type=$type", [], $force_update);
+
+        if ($response['code'] != 200) {
+            throw new APIException("Invalid response code.");
+        }
+
+        $response_body = json_decode($response['body'], true);
+
+        return isset($response_body['images']) ? $response_body['images'] : null;
+    }
+
+    /**
+     * @param int $force_update
+     * @return null
+     * @throws APIException
+     */
+    public function getRegions($force_update = 0)
+    {
+        $response = $this->get(self::$API_REGIONS, [], $force_update);
+
+        if ($response['code'] != 200) {
+            throw new APIException("Invalid response code.");
+        }
+
+        $response_body = json_decode($response['body'], true);
+
+        return isset($response_body['regions']) ? $response_body['regions'] : null;
+    }
+
+    /**
+     * @param int $force_update
+     * @return null
+     * @throws APIException
+     */
+    public function getSizes($force_update = 0)
+    {
+        $response = $this->get(self::$API_SIZES, [], $force_update);
+
+        if ($response['code'] != 200) {
+            throw new APIException("Invalid response code.");
+        }
+
+        $response_body = json_decode($response['body'], true);
+
+        return isset($response_body['sizes']) ? $response_body['sizes'] : null;
+    }
+
+    /**
+     * Gets all droplets
+     * @return array | null
+     * @param int $force_update Whether force a cache update or not
+     * @throws APIException
+     */
+    public function getDroplets($force_update = 0)
     {
         $response = $this->get(self::$API_DROPLET, [], $force_update);
 
@@ -62,11 +120,11 @@ class DigitalOcean
     /**
      * Gets information about a single droplet
      * @param $droplet_id
-     * @param bool $force_update
+     * @param int $force_update
      * @return null
      * @throws APIException
      */
-    public function getDroplet($droplet_id, $force_update = false)
+    public function getDroplet($droplet_id, $force_update = 0)
     {
         $response = $this->get(self::$API_DROPLET . '/' . $droplet_id, [], $force_update);
 
@@ -130,13 +188,18 @@ class DigitalOcean
      * Makes a GET query
      * @param string $endpoint API endpoint
      * @param array $custom_headers optional custom headers
-     * @param bool $force_update True to update cache (default is false)
+     * @param int $force_update 1 to force update, -1 to force cached (default is 0)
      * @return mixed
      */
-    public function get($endpoint, array $custom_headers = [], $force_update = false)
+    public function get($endpoint, array $custom_headers = [], $force_update = 0)
     {
-        if (!$force_update) {
-            $cached = $this->cache->getCachedUnlessExpired($endpoint);
+        if ($force_update < 1) {
+
+            if ($force_update == -1) {
+                $cached = $this->cache->getCached($endpoint);
+            } else {
+                $cached = $this->cache->getCachedUnlessExpired($endpoint);
+            }
 
             if ($cached !== null) {
                 return [ 'code' => 200, 'body' => $cached ];
