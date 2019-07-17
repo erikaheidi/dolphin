@@ -16,5 +16,11 @@
         "psr-4": {
             "Dolphin\\": "src/"
         }
-    }
+    },
+
+    "scripts": {
+        "post-update-cmd": [
+            "@php -r \"file_exists('config.php') || copy('config_sample.php', 'config.php');\""
+        ]
+    }    
 }
