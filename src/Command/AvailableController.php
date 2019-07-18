@@ -16,19 +16,22 @@ class AvailableController extends CommandController
     /** @var  Inventory */
     protected $inventory;
 
-    public function getRegions(array $arguments = [])
+    /**
+     * Gets available Droplet regions
+     * @throws \Dolphin\Exception\APIException
+     */
+    public function getRegions()
     {
-        $params = $this->parseArgs($arguments);
-        $force_update = array_key_exists('--force-update', $params) ? 1 : 0;
+        $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
-        if (array_key_exists('--cached', $params)) {
+        if ($this->flagExists('--force-cache')) {
             $force_update = -1;
         }
 
         $regions = $this->getDolphin()->getDO()->getRegions($force_update);
 
         if ($regions === null) {
-            $this->output("No Regions found.", "error");
+            $this->getPrinter()->error("No Regions found.");
             exit;
         }
 
@@ -43,17 +46,18 @@ class AvailableController extends CommandController
             ];
         }
 
-        $this->getPrinter()->newline();
         $this->getPrinter()->printTable($print_table);
-        $this->getPrinter()->newline();       
     }
 
-    public function getSizes(array $arguments = [])
+    /**
+     * Gets available Droplet Sizes
+     * @throws \Dolphin\Exception\APIException
+     */
+    public function getSizes()
     {
-        $params = $this->parseArgs($arguments);
-        $force_update = array_key_exists('--force-update', $params) ? 1 : 0;
+        $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
-        if (array_key_exists('--cached', $params)) {
+        if ($this->flagExists('--force-cache')) {
             $force_update = -1;
         }
 
@@ -78,22 +82,18 @@ class AvailableController extends CommandController
             ];
         }
 
-        $this->getPrinter()->newline();
         $this->getPrinter()->printTable($print_table);
-        $this->getPrinter()->newline();
     }
     
     /**
      * Gets available distro images
-     * @param array $arguments
      * @throws \Dolphin\Exception\APIException
      */
-    public function getImages(array $arguments = [])
+    public function getImages()
     {
-        $params = $this->parseArgs($arguments);
-        $force_update = array_key_exists('--force-update', $params) ? 1 : 0;
+        $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
-        if (array_key_exists('--cached', $params)) {
+        if ($this->flagExists('--force-cache')) {
             $force_update = -1;
         }
 
@@ -119,9 +119,7 @@ class AvailableController extends CommandController
             ];
         }
 
-        $this->getPrinter()->newline();
         $this->getPrinter()->printTable($print_table);
-        $this->getPrinter()->newline();
     }
 
     public function getKeys()

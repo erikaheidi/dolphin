@@ -22,8 +22,7 @@ class AnsibleController extends CommandController
         $inventory = $this->getInventory();
 
         if ($inventory === null) {
-            $this->output("ERROR: unable to create inventory.", "error");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("ERROR: unable to create inventory.");
         }
 
         echo $inventory->output();
@@ -38,8 +37,7 @@ class AnsibleController extends CommandController
         $inventory = $this->getInventory();
 
         if ($inventory === null) {
-            $this->output("ERROR: unable to create inventory.", "error");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("ERROR: unable to create inventory.");
         }
 
         print $inventory->getJson();

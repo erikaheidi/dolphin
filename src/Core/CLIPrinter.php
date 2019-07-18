@@ -60,9 +60,30 @@ class CLIPrinter
         return isset($this->palettes[$style]) ? $this->palettes[$style] : "default";
     }
 
-    public function out($message, $style = "info")
+    public function out($message, $style = "default")
     {
         echo $this->format($message, $style);
+    }
+
+    public function error($message)
+    {
+        $this->newline();
+        $this->out($message, "error");
+        $this->newline();
+    }
+
+    public function info($message)
+    {
+        $this->newline();
+        $this->out($message, "info");
+        $this->newline();
+    }
+
+    public function success($message)
+    {
+        $this->newline();
+        $this->out($message, "success");
+        $this->newline();
     }
 
     public function newline()
@@ -112,9 +133,13 @@ class CLIPrinter
      * @param int $min_col_size
      * @param bool $with_header
      */
-    public function printTable(array $table, $min_col_size = 10, $with_header = true)
+    public function printTable(array $table, $min_col_size = 10, $with_header = true, $spacing = true)
     {
         $first = true;
+
+        if ($spacing) {
+            $this->newline();
+        }
 
         foreach ($table as $index => $row) {
 
@@ -125,6 +150,10 @@ class CLIPrinter
 
             $this->printRow($table, $index, $style, $min_col_size);
             $first = false;
+        }
+
+        if ($spacing) {
+            $this->newline();
         }
     }
 

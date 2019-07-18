@@ -16,25 +16,20 @@ class DropletController extends CommandController
      * Lists droplets
      * usage: ./dolphin droplet list
      *
-     * @param array $arguments
      * @throws APIException
      */
-    public function listDroplets(array $arguments = [])
+    public function listDroplets()
     {
-        $this->getPrinter()->newline();
+        $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
-        $params = $this->parseArgs($arguments);
-
-        $force_update = array_key_exists('--force-update', $params) ? true : false;
-
-        if ($force_update) {
-            $this->getPrinter()->out("Fetching contents from API...\n");
+        if ($this->flagExists('--force-cache')) {
+            $force_update = -1;
         }
 
         $droplets = $this->getDolphin()->getDO()->getDroplets($force_update);
 
         if ($droplets === null) {
-            $this->output("No Droplets found.", "error");
+            $this->getPrinter()->error("No Droplets found.");
             exit;
         }
 
@@ -52,27 +47,24 @@ class DropletController extends CommandController
             ];
         }
 
-        $this->getPrinter()->newline();
         $this->getPrinter()->printTable($print_table);
-        $this->getPrinter()->newline();
     }
 
     /**
      * Gets detailed information about a droplet.
      * usage: ./dolphin droplet info DROPLET_ID [force-update]
-     *
-     * @param array $arguments
      */
-    public function infoDroplet(array $arguments)
+    public function infoDroplet()
     {
-        $params = $this->parseArgs($arguments);
-        $force_update = array_key_exists('--force-update', $params) ? true : false;
+        $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
-        $droplet_id = $arguments[0];
+        if ($this->flagExists('--force-cache')) {
+            $force_update = -1;
+        }
+
+        $droplet_id = $this->getParameters()[0];
         if (!$droplet_id) {
-            $this->getPrinter()->newline();
-            $this->getPrinter()->out("Error: You must provide the droplet ID.", "error_alt");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("You must provide the droplet ID.");
             exit;
         }
 
@@ -86,9 +78,7 @@ class DropletController extends CommandController
             print_r($droplet);
 
         } catch (APIException $e) {
-            $this->getPrinter()->newline();
-            $this->getPrinter()->out("An API error occurred.", "error_alt");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("An API error occurred.");
             $this->getPrinter()->out("Response Info:");
             $this->getPrinter()->newline();
 
@@ -109,23 +99,17 @@ class DropletController extends CommandController
         $params = $this->parseArgs($arguments);
 
         if (!isset($params['name'])) {
-            $this->getPrinter()->out("You must provide a droplet name in the following format: name=MyDropletName.", "error_alt");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("You must provide a droplet name in the following format: name=MyDropletName.");
             exit;
         }
 
-        $this->getPrinter()->newline();
-        $this->getPrinter()->out("Creating new Droplet...", 'alt');
-        $this->getPrinter()->newline();
+        $this->getPrinter()->info("Creating new Droplet...");
 
         try {
             $response = $this->getDolphin()->getDO()->createDroplet($params);
-            $this->getPrinter()->newline();
-            $this->getPrinter()->out(
-                sprintf("Your new droplet \"%s\" was successfully created. Please notice it might take a few minutes for the network to be ready.\nHere's some info:", $params['name']),
-                'success'
+            $this->getPrinter()->success(
+                sprintf("Your new droplet \"%s\" was successfully created. Please notice it might take a few minutes for the network to be ready.\nHere's some info:", $params['name'])
             );
-            $this->getPrinter()->newline();
 
             $response_body = json_decode($response['body'], true);
             $droplet = new Droplet($response_body['droplet']);
@@ -140,12 +124,10 @@ class DropletController extends CommandController
                 $droplet->created_at,
             ];
 
-            $this->getPrinter()->newline();
             $this->getPrinter()->printTable($table);
 
         } catch (APIException $e) {
-            $this->getPrinter()->out("An API error has ocurred.", "error_alt");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("An API error has ocurred.");
             $this->getPrinter()->out("Response Info:");
             $this->getPrinter()->newline();
 
@@ -166,18 +148,14 @@ class DropletController extends CommandController
     {
         $droplet_id = $arguments[0];
         if (!$droplet_id) {
-            $this->getPrinter()->newline();
-            $this->getPrinter()->out("Error: You must provide the droplet ID.", "error_alt");
-            $this->getPrinter()->newline();
+            $this->getPrinter()->error("Error: You must provide the droplet ID.");
             exit;
         }
 
-        $this->getPrinter()->newline();
-        $this->getPrinter()->out(sprintf("Destroying Droplet ID %s ...", $droplet_id), 'info_alt');
-        $this->getPrinter()->newline();
+        $this->getPrinter()->info(sprintf("Destroying Droplet ID %s ...", $droplet_id));
 
         if ($this->getDolphin()->getDO()->destroyDroplet($droplet_id)) {
-            $this->getPrinter()->out("Droplet successfully destroyed.\n\n", 'info');
+            $this->getPrinter()->success("Droplet successfully destroyed.\n\n");
         }
     }
 
@@ -199,7 +177,7 @@ class DropletController extends CommandController
      */
     public function defaultCommand()
     {
-        $this->output("Usage: ./dolphin droplet [list|create|destroy]", "unicorn");
+        $this->output("Usage: ./dolphin droplet [list|info|create|destroy]", "unicorn");
         $this->getPrinter()->newline();
     }
 }

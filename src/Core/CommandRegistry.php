@@ -26,7 +26,7 @@ class CommandRegistry
     /**
      * @param string $namespace Command Namespace
      * @param string $command_name Command name
-     * @param array $arguments Command extra parameters
+     * @param array $arguments Command parameters
      * @return mixed
      * @throws CommandNotFoundException
      */
@@ -40,6 +40,7 @@ class CommandRegistry
 
         /** @var CommandController $controller */
         $controller = $this->getController($namespace);
+        $controller->setParameters($arguments);
 
         return $controller->$command($arguments);
     }

@@ -13,21 +13,55 @@ abstract class CommandController
     /** @var  Dolphin */
     protected $dolphin;
 
+    /** @var  array $parameters */
+    protected $parameters;
+
+    /**
+     * CommandController constructor.
+     * @param Dolphin $dolphin
+     */
     public function __construct(Dolphin $dolphin)
     {
         $this->dolphin = $dolphin;
     }
 
+    /**
+     * @return array
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * @param array $arguments
+     */
+    public function setParameters(array $arguments)
+    {
+        $this->parameters = $this->parseArgs($arguments);
+    }
+
+    /**
+     * @param $string
+     * @param string $style
+     */
     public function output($string, $style = "default")
     {
         $this->dolphin->getPrinter()->out($string, $style);
     }
 
+    /**
+     * @param $name
+     * @return mixed|null
+     */
     public function getConfig($name)
     {
         return $this->dolphin->getConfig()->$name;
     }
 
+    /**
+     * @return CLIPrinter
+     */
     public function getPrinter()
     {
         return $this->dolphin->getPrinter();
@@ -72,6 +106,11 @@ abstract class CommandController
      */
     public abstract function defaultCommand();
 
+    /**
+     * Parse command arguments
+     * @param array $arguments
+     * @return array
+     */
     public function parseArgs(array $arguments)
     {
         $params = [];
@@ -82,5 +121,10 @@ abstract class CommandController
         }
 
         return $params;
+    }
+    
+    public function flagExists($flag)
+    {
+        return array_key_exists($flag, $this->getParameters());
     }
 }
