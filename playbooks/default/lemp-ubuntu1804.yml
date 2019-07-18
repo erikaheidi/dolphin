@@ -33,7 +33,7 @@
     
     - name: Sets Nginx conf file
       template:
-        src: ubuntu1804.j2
+        src: templates/ubuntu1804.j2
         dest: "/etc/nginx/sites-available/{{ http_conf }}"
 
     - name: Enables new site
@@ -84,7 +84,7 @@
 
     - name: Sets Up PHP Info Page
       template:
-        src: info.php.j2
+        src: templates/info.php.j2
         dest: "/var/www/html/info.php"
 
 # Handlers
