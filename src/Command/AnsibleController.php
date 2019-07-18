@@ -6,10 +6,10 @@
 namespace Dolphin\Command;
 
 use Dolphin\CommandController;
-use Dolphin\Provider\Ansible\Group;
-use Dolphin\Provider\Ansible\Host;
-use Dolphin\Provider\Ansible\Inventory;
-use Dolphin\Provider\DigitalOcean\Droplet;
+use Dolphin\Model\Ansible\Group;
+use Dolphin\Model\Ansible\Host;
+use Dolphin\Model\Ansible\Inventory;
+use Dolphin\Model\DigitalOcean\Droplet;
 
 class AnsibleController extends CommandController
 {

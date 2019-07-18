@@ -38,6 +38,9 @@ class DigitalOcean
         $this->cache = $cache;
     }
 
+    /**
+     * @return string
+     */
     public function getLastResponse()
     {
         return $this->last_response;

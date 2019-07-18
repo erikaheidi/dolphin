@@ -6,13 +6,10 @@
 namespace Dolphin\Command;
 
 use Dolphin\CommandController;
-use Dolphin\Provider\Ansible\Group;
-use Dolphin\Provider\Ansible\Host;
-use Dolphin\Provider\Ansible\Inventory;
-use Dolphin\Provider\DigitalOcean\Droplet;
-use Dolphin\Provider\DigitalOcean\Image;
-use Dolphin\Provider\DigitalOcean\Region;
-use Dolphin\Provider\DigitalOcean\Size;
+use Dolphin\Model\Ansible\Inventory;
+use Dolphin\Model\DigitalOcean\Image;
+use Dolphin\Model\DigitalOcean\Region;
+use Dolphin\Model\DigitalOcean\Size;
 
 class AvailableController extends CommandController
 {

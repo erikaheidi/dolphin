@@ -3,7 +3,7 @@
  * Image Object
  */
 
-namespace Dolphin\Provider\DigitalOcean;
+namespace Dolphin\Model\DigitalOcean;
 
 
 class Image extends APIObject

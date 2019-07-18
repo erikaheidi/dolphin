@@ -3,7 +3,7 @@
  * Region Object
  */
 
-namespace Dolphin\Provider\DigitalOcean;
+namespace Dolphin\Model\DigitalOcean;
 
 
 class Region extends APIObject

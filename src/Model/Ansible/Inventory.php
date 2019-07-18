@@ -3,7 +3,7 @@
  * Ansible Inventory Model
  */
 
-namespace Dolphin\Provider\Ansible;
+namespace Dolphin\Model\Ansible;
 
 class Inventory
 {

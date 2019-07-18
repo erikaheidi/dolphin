@@ -8,7 +8,7 @@ namespace Dolphin\Command;
 
 use Dolphin\CommandController;
 use Dolphin\Exception\APIException;
-use Dolphin\Provider\DigitalOcean\Droplet;
+use Dolphin\Model\DigitalOcean\Droplet;
 
 class DropletController extends CommandController
 {

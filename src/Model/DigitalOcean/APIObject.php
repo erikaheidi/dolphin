@@ -3,7 +3,7 @@
  * API Object Parent Class
  */
 
-namespace Dolphin\Provider\DigitalOcean;
+namespace Dolphin\Model\DigitalOcean;
 
 
 abstract class APIObject
