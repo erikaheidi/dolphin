@@ -31,6 +31,7 @@ class DigitalOcean
     protected static $API_IMAGES = "https://api.digitalocean.com/v2/images";
     protected static $API_REGIONS = "https://api.digitalocean.com/v2/regions";
     protected static $API_SIZES = "https://api.digitalocean.com/v2/sizes";
+    protected static $API_KEYS = "https://api.digitalocean.com/v2/account/keys";
 
     /**
      * DigitalOcean constructor.
@@ -51,6 +52,24 @@ class DigitalOcean
     public function getLastResponse()
     {
         return $this->last_response;
+    }
+
+    /**
+     * @param int $force_update
+     * @return null
+     * @throws APIException
+     */
+    public function getKeys($force_update = 0)
+    {
+        $response = $this->get(self::$API_KEYS, [], $force_update);
+
+        if ($response['code'] != 200) {
+            throw new APIException("Invalid response code.");
+        }
+
+        $response_body = json_decode($response['body'], true);
+
+        return isset($response_body['ssh_keys']) ? $response_body['ssh_keys'] : null;
     }
 
     /**

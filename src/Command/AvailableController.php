@@ -8,6 +8,7 @@ namespace Dolphin\Command;
 use Dolphin\Core\CommandController;
 use Dolphin\Model\Ansible\Inventory;
 use Dolphin\Model\DigitalOcean\Image;
+use Dolphin\Model\DigitalOcean\Key;
 use Dolphin\Model\DigitalOcean\Region;
 use Dolphin\Model\DigitalOcean\Size;
 
@@ -64,7 +65,7 @@ class AvailableController extends CommandController
         $sizes = $this->getDolphin()->getDO()->getSizes($force_update);
 
         if ($sizes === null) {
-            $this->output("No Sizes found.", "error");
+            $this->getPrinter()->error("No Sizes found.");
             exit;
         }
 
@@ -100,7 +101,7 @@ class AvailableController extends CommandController
         $images = $this->getDolphin()->getDO()->getImages($force_update);
 
         if ($images === null) {
-            $this->output("No Images found.", "error");
+            $this->getPrinter()->error("No Images found.");
             exit;
         }
 
@@ -124,7 +125,31 @@ class AvailableController extends CommandController
 
     public function getKeys()
     {
+        $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
+        if ($this->flagExists('--force-cache')) {
+            $force_update = -1;
+        }
+
+        $keys = $this->getDolphin()->getDO()->getKeys($force_update);
+
+        if ($keys === null) {
+            $this->getPrinter()->error("No SSH Keys found.");
+            exit;
+        }
+
+        $print_table[] = [ 'ID', 'NAME', 'FINGERPRINT' ];
+
+        foreach ($keys as $key_info) {
+            $key = new Key($key_info);
+            $print_table[] = [
+                $key->id,
+                $key->name,
+                $key->fingerprint,
+            ];
+        }
+
+        $this->getPrinter()->printTable($print_table);
     }
 
     public function getCommandMap()
@@ -133,6 +158,7 @@ class AvailableController extends CommandController
             'images'  => 'getImages',
             'regions' => 'getRegions',
             'sizes'   => 'getSizes',
+            'keys'    => 'getKeys',
         ];
     }
 
