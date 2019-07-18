@@ -11,7 +11,7 @@ use Dolphin\Core\CLIPrinter;
 use Dolphin\Core\Config;
 use Dolphin\Core\CommandRegistry;
 use Dolphin\Core\FileCache;
-use Dolphin\Provider\DigitalOcean;
+use Dolphin\Provider\CurlAgent;
 
 class Dolphin
 {
@@ -49,7 +49,7 @@ class Dolphin
         $this->printer = new CLIPrinter();
 
         // DO API
-        $this->do = new DigitalOcean($this->getConfig(), $this->cache);
+        $this->do = new DigitalOcean($this->getConfig(), $this->cache, new CurlAgent());
     }
 
     /**

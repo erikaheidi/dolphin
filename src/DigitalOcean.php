@@ -3,17 +3,21 @@
  * Class that interacts with the DigitalOcean API.
  */
 
-namespace Dolphin\Provider;
+namespace Dolphin;
 
 use Dolphin\Core\Config;
 use Dolphin\Core\FileCache;
 use Dolphin\Exception\APIException;
 use Dolphin\Exception\MissingArgumentException;
+use Dolphin\Provider\AgentInterface;
 
 class DigitalOcean
 {
     /** @var  Config */
     protected $config;
+    
+    /** @var  AgentInterface */
+    protected $agent;
 
     /** @var  FileCache */
     protected $cache;
@@ -32,11 +36,13 @@ class DigitalOcean
      * DigitalOcean constructor.
      * @param Config $config
      * @param FileCache $cache
+     * @param AgentInterface $agent
      */
-    public function __construct(Config $config, FileCache $cache)
+    public function __construct(Config $config, FileCache $cache, AgentInterface $agent)
     {
         $this->config = $config;
         $this->cache = $cache;
+        $this->agent = $agent;
     }
 
     /**
@@ -210,15 +216,9 @@ class DigitalOcean
             }
         }
 
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => array_merge($this->getDefaultHeaders(), $custom_headers),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => $endpoint,
-        ]);
-
-        $this->last_response = $this->getQueryResponse($curl);
+        $headers = array_merge($this->getDefaultHeaders(), $custom_headers);
+        
+        $this->last_response = $this->agent->get($endpoint, $headers);
 
         $this->cache->save($this->last_response['body'], $endpoint);
 
@@ -234,19 +234,9 @@ class DigitalOcean
      */
     public function post($endpoint, array $params, $custom_headers = [])
     {
-        $curl = curl_init();
+        $headers = array_merge($this->getDefaultHeaders(), $custom_headers);
 
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => array_merge($this->getDefaultHeaders(), $custom_headers),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($params),
-            CURLOPT_URL => $endpoint,
-            #CURLINFO_HEADER_OUT => true,
-            CURLOPT_TIMEOUT => 120,
-        ]);
-
-        $this->last_response = $this->getQueryResponse($curl);
+        $this->last_response = $this->agent->post($endpoint, $params, $headers);
 
         return $this->last_response;
     }
@@ -259,34 +249,11 @@ class DigitalOcean
      */
     public function delete($endpoint, $custom_headers = [])
     {
-        $curl = curl_init();
+        $headers = array_merge($this->getDefaultHeaders(), $custom_headers);
 
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => array_merge($this->getDefaultHeaders(), $custom_headers),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "DELETE",
-            CURLOPT_URL => $endpoint,
-            #CURLINFO_HEADER_OUT => true,
-        ]);
-
-        $this->last_response = $this->getQueryResponse($curl);
+        $this->last_response = $this->agent->delete($endpoint, $headers);
 
         return $this->last_response;
-    }
-
-    /**
-     * Exec curl and get response
-     * @param $curl
-     * @return array
-     */
-    protected function getQueryResponse($curl)
-    {
-        $response = curl_exec($curl);
-        $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        curl_close($curl);
-
-        return [ 'code' => $response_code, 'body' => $response ];
     }
 
     /**
