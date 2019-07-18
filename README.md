@@ -19,9 +19,10 @@
 
 # Dolphin
 
-Dolphin is a simple command-line PHP application to manage DigitalOcean servers. It's a WORK IN PROGRESS.
+Dolphin is a command-line PHP application that can be used as *mission control* for managing DigitalOcean droplets.
+Dolphin can be integrated with Ansible setups for provisioning PHP servers.
 
-For the moment, there are only a few commands available. More to come.
+_Note: This is a WORK IN PROGRESS._
 
 ## Requirements
 
@@ -90,7 +91,7 @@ return $dolphin_config = [
 Now you can execute Dolphin with:
 
 ```
-./dolphin [command] [sub-command]
+./dolphin [command] [sub-command] [params]
 ```
 
 
@@ -98,7 +99,7 @@ Now you can execute Dolphin with:
 
 The following commands can be used to manage droplets.
 
-### List Droplets
+### Listing Droplets
 
 ```command
 ./dolphin droplet list
@@ -115,14 +116,8 @@ ID        NAME                        IP              REGION    SIZE
 142807570 ubuntu-s-1vcpu-1gb-ams3-01  167.99.217.247  ams3      s-1vcpu-1gb
 ```
 
-To force a cache update, include the flag `--force-update`:
 
-```
-./dolphin droplet list --force-update
-```
-
-
-### Get Information About a Droplet
+### Getting Information About a Droplet
 
 ```
 ./dolphin droplet info DROPLET_ID
@@ -130,14 +125,7 @@ To force a cache update, include the flag `--force-update`:
 
 Output will be a JSON will all the available information about that droplet.
 
-To force a cache update, include the flag `--force-update`:
-
-```
-./dolphin droplet info DROPLET_ID --force-update
-```
-
-
-### Create a New Droplet
+### Creating a New Droplet
 Uses default options from your config file, but you can override any of the API query parameters.
 Parameters should be passed as `name=value` items. Only the **name** parameter is mandatory.
 
@@ -153,13 +141,48 @@ Let's say you want to use a custom region and droplet size:
 
 Check the [DigitalOCean API documentation](https://developers.digitalocean.com/documentation/v2/#create-a-new-droplet) for more information on all the parameters you can use.
 
-### Destroy a Droplet
+### Destroying a Droplet
 You can obtain the ID of a Droplet by running `droplet list` to list all your droplets.
 
 ```
 ./dolphin droplet destroy DROPLET_ID
 ```
 
+## Checking for Information
+
+To get a list of all available regions you can use when creating a new Droplet, use:
+
+```
+./dolphin available regions
+```
+
+To get a list of all available sizes you can use when creating a new Droplet, use:
+
+```
+./dolphin available sizes
+```
+
+To get a list of all registered SSH Keys you can use when creating a new Droplet, use:
+
+```
+./dolphin available keys
+```
+
+## Manipulating Cache
+
+To optimize API querying and avoid hitting resource limits, Dolphin uses a simple file caching mechanism.
+
+To force a cache update, include the flag `--force-update`:
+
+```
+./dolphin droplet list --force-update
+```
+
+If instead you'd like to enforce cache usage and not query for new results even if the cache timeout has been reached, you can use:
+
+```
+./dolphin droplet list --force-cache
+```
 
 ## Ansible Commands
 
