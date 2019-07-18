@@ -5,7 +5,7 @@
 
 namespace Dolphin\Command;
 
-use Dolphin\CommandController;
+use Dolphin\Core\CommandController;
 use Dolphin\Model\Ansible\Group;
 use Dolphin\Model\Ansible\Host;
 use Dolphin\Model\Ansible\Inventory;

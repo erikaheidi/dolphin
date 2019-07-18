@@ -5,7 +5,7 @@
 
 namespace Dolphin\Command;
 
-use Dolphin\CommandController;
+use Dolphin\Core\CommandController;
 
 class HelpController extends CommandController
 {

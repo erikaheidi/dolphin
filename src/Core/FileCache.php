@@ -3,7 +3,7 @@
  * Simple file cache
  */
 
-namespace Dolphin\Provider;
+namespace Dolphin\Core;
 
 
 class FileCache

@@ -4,7 +4,9 @@
  * Interface for Command Controllers
  */
 
-namespace Dolphin;
+namespace Dolphin\Core;
+
+use Dolphin\Dolphin;
 
 abstract class CommandController
 {

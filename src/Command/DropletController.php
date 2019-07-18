@@ -6,7 +6,7 @@
 
 namespace Dolphin\Command;
 
-use Dolphin\CommandController;
+use Dolphin\Core\CommandController;
 use Dolphin\Exception\APIException;
 use Dolphin\Model\DigitalOcean\Droplet;
 

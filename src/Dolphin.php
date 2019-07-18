@@ -7,9 +7,11 @@ namespace Dolphin;
 
 use Dolphin\Exception\CommandNotFoundException;
 use Dolphin\Exception\InvalidArgumentCountException;
-use Dolphin\Provider\CLIPrinter;
+use Dolphin\Core\CLIPrinter;
+use Dolphin\Core\Config;
+use Dolphin\Core\CommandRegistry;
+use Dolphin\Core\FileCache;
 use Dolphin\Provider\DigitalOcean;
-use Dolphin\Provider\FileCache;
 
 class Dolphin
 {

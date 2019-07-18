@@ -3,7 +3,7 @@
  * Cronfig Utility
  */
 
-namespace Dolphin;
+namespace Dolphin\Core;
 
 class Config
 {

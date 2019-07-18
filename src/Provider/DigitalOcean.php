@@ -5,7 +5,8 @@
 
 namespace Dolphin\Provider;
 
-use Dolphin\Config;
+use Dolphin\Core\Config;
+use Dolphin\Core\FileCache;
 use Dolphin\Exception\APIException;
 use Dolphin\Exception\MissingArgumentException;
 

@@ -3,7 +3,7 @@
  * CLI Printing / Output Utilities
  */
 
-namespace Dolphin\Provider;
+namespace Dolphin\Core;
 
 class CLIPrinter
 {

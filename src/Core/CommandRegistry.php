@@ -3,7 +3,8 @@
  * Command Registry
  */
 
-namespace Dolphin;
+namespace Dolphin\Core;
+use Dolphin\Dolphin;
 use Dolphin\Exception\CommandNotFoundException;
 
 class CommandRegistry

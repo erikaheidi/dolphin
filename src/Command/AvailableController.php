@@ -5,7 +5,7 @@
 
 namespace Dolphin\Command;
 
-use Dolphin\CommandController;
+use Dolphin\Core\CommandController;
 use Dolphin\Model\Ansible\Inventory;
 use Dolphin\Model\DigitalOcean\Image;
 use Dolphin\Model\DigitalOcean\Region;
