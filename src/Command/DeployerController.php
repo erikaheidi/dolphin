@@ -23,9 +23,9 @@ class DeployerController extends CommandController
 
         foreach ($scripts as $deploy) {
             $this->getPrinter()->newline();
-            $this->getPrinter()->out($deploy['name'], "unicorn");
-            $this->getPrinter()->out(' on ', "info");
-            $this->getPrinter()->out($deploy['system'], "unicorn");
+            $this->getPrinter()->out($deploy['name'], "info");
+            $this->getPrinter()->out(' for ', "default");
+            $this->getPrinter()->out($deploy['system'], "info");
         }
 
         $this->getPrinter()->newline();

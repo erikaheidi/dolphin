@@ -29,7 +29,7 @@ class HelpController extends CommandController
         $registered_commands = $this->getDolphin()->getCommandRegistry()->getRegisteredCommands();
 
         foreach ($registered_commands as $namespace => $commands) {
-            $printer->out("$namespace", "unicorn_alt");
+            $printer->out("$namespace", "info_alt");
             $printer->newline();
 
             foreach ($commands as $command => $callback) {

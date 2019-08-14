@@ -23,11 +23,13 @@ class CLIPrinter
     static $BG_WHITE = '47';
     static $BG_MAGENTA = '45';
 
-    protected $palettes;
+    protected $palette;
 
-    public function __construct()
+    protected $themes;
+
+    public function __construct($palette = 'regular')
     {
-        $this->palettes = [
+        $this->themes['regular'] = [
             'default'     => [ self::$FG_WHITE ],
             'alt'         => [ self::$FG_BLACK, self::$BG_WHITE ],
             'error'       => [ self::$FG_RED ],
@@ -35,10 +37,21 @@ class CLIPrinter
             'success'     => [ self::$FG_GREEN ],
             'success_alt' => [ self::$FG_WHITE, self::$BG_GREEN ],
             'info'        => [ self::$FG_CYAN],
-            'info_alt'    => [ self::$FG_WHITE, self::$BG_CYAN ],
-            'unicorn'     => [ self::$FG_MAGENTA ],
-            'unicorn_alt' => [ self::$FG_BLUE, self::$BG_MAGENTA ]
+            'info_alt'    => [ self::$FG_WHITE, self::$BG_CYAN ]
         ];
+
+        $this->themes['unicorn'] = [
+            'default'     => [ self::$FG_CYAN ],
+            'alt'         => [ self::$FG_BLACK, self::$BG_CYAN ],
+            'error'       => [ self::$FG_RED ],
+            'error_alt'   => [ self::$FG_CYAN, self::$BG_RED ],
+            'success'     => [ self::$FG_GREEN ],
+            'success_alt' => [ self::$FG_BLACK, self::$BG_GREEN ],
+            'info'        => [ self::$FG_MAGENTA],
+            'info_alt'    => [ self::$FG_WHITE, self::$BG_MAGENTA ]
+        ];
+
+        $this->palette = isset($this->themes[$palette]) ? $this->themes[$palette] : $this->themes['regular'];
     }
 
     public function format($message, $style = "default")
@@ -57,7 +70,7 @@ class CLIPrinter
 
     public function getPalette($style)
     {
-        return isset($this->palettes[$style]) ? $this->palettes[$style] : "default";
+        return isset($this->palette[$style]) ? $this->palette[$style] : "default";
     }
 
     public function out($message, $style = "default")
@@ -88,7 +101,7 @@ class CLIPrinter
 
     public function newline()
     {
-        echo "\n";
+        $this->out("\n");
     }
 
     /**
@@ -116,7 +129,7 @@ class CLIPrinter
         ';
 
         $this->out($header, "info");
-        $this->out("\n");
+        $this->newline();
     }
 
     /**
@@ -124,8 +137,10 @@ class CLIPrinter
      */
     public function printUsage()
     {
-        $this->out("Usage: ./dolphin [command] [sub-command] [params]\n", "unicorn");
-        $this->out("For help, use ./dolphin help\n", "info");
+        $this->out("Usage: ./dolphin [command] [sub-command] [params]", "info_alt");
+        $this->newline();
+        $this->out("For help, use ./dolphin help", "info");
+        $this->newline();
     }
 
     /**

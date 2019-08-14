@@ -49,7 +49,7 @@ class Dolphin
         $this->cache = new FileCache($cache_dir, $this->getConfig()->CACHE_EXPIRY);
 
         // CLI printer
-        $this->printer = new CLIPrinter();
+        $this->printer = new CLIPrinter($this->getConfig()->THEME);
 
         // DO API
         $this->do = new DigitalOcean($this->getConfig()->DO_API_TOKEN, new CurlClient(), $this->cache, $this->getConfig()->DO);

@@ -177,7 +177,7 @@ class DropletController extends CommandController
      */
     public function defaultCommand()
     {
-        $this->output("Usage: ./dolphin droplet [list|info|create|destroy]", "unicorn");
+        $this->output("Usage: ./dolphin droplet [list|info|create|destroy]", "info");
         $this->getPrinter()->newline();
     }
 }

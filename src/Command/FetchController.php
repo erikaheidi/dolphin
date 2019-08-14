@@ -164,7 +164,7 @@ class FetchController extends CommandController
 
     public function defaultCommand()
     {
-        $this->output("Usage: ./dolphin ansible inventory", "unicorn");
+        $this->output("Usage: ./dolphin ansible inventory", "info");
         $this->getPrinter()->newline();
     }
 
