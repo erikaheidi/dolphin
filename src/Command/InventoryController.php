@@ -1,6 +1,6 @@
 <?php
 /**
- * Ansible Command Controller
+ * Inventory Command Controller
  */
 
 namespace Dolphin\Command;
@@ -11,7 +11,7 @@ use Dolphin\Model\Ansible\Host;
 use Dolphin\Model\Ansible\Inventory;
 use Dolphin\Model\DigitalOcean\Droplet;
 
-class AnsibleController extends CommandController
+class InventoryController extends CommandController
 {
 
     /**
@@ -47,16 +47,14 @@ class AnsibleController extends CommandController
     public function getCommandMap()
     {
         return [
-            'inventory:json' => 'dynamicInventory',
-            'inventory:ini'  => 'outputInventory',
-            'inventory'      => 'outputInventory',
+            'json' => 'dynamicInventory',
+            'ini'  => 'outputInventory',
         ];
     }
 
     public function defaultCommand()
     {
-        $this->output("Usage: ./dolphin ansible inventory", "unicorn");
-        $this->getPrinter()->newline();
+        $this->outputInventory();
     }
 
     /**

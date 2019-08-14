@@ -11,7 +11,7 @@ use Dolphin\Core\CLIPrinter;
 use Dolphin\Core\Config;
 use Dolphin\Core\CommandRegistry;
 use Dolphin\Core\FileCache;
-use Dolphin\Provider\CurlAgent;
+use Dolphin\Provider\CurlClient;
 
 class Dolphin
 {
@@ -29,6 +29,9 @@ class Dolphin
 
     /** @var  FileCache */
     protected $cache;
+
+    /** @var  Deployer */
+    protected $deployer;
 
 
     /**
@@ -49,7 +52,11 @@ class Dolphin
         $this->printer = new CLIPrinter();
 
         // DO API
-        $this->do = new DigitalOcean($this->getConfig(), $this->cache, new CurlAgent());
+        $this->do = new DigitalOcean($this->getConfig()->DO_API_TOKEN, new CurlClient(), $this->cache, $this->getConfig()->DO);
+
+        // Deployer (Ansible)
+        $this->deployer = new Deployer(__DIR__ . '/../hosts.php', __DIR__ . '/../' . $this->getConfig()->PLAYBOOKS_DIR);
+        $this->deployer->setAnsibleUser($this->getConfig()->ANSIBLE_USER);
     }
 
     /**
@@ -117,6 +124,14 @@ class Dolphin
     public function getDO()
     {
         return $this->do;
+    }
+
+    /**
+     * @return Deployer
+     */
+    public function getDeployer()
+    {
+        return $this->deployer;
     }
 
     /**

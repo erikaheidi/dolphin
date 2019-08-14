@@ -9,4 +9,4 @@ use Dolphin\Core\Config;
 $config = new Config(require __DIR__ . '/config.php');
 $dolphin = new Dolphin($config);
 
-$dolphin->runCommand(3, [ 'dolphin', 'ansible', 'inventory:json']);
+$dolphin->runCommand(3, [ 'dolphin', 'inventory', 'json']);

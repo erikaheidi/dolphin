@@ -1,11 +1,11 @@
 <?php
 /**
- * Simple Curl-based API Agent
+ * Simple Curl-based API Client / Agent
  */
 
 namespace Dolphin\Provider;
 
-class CurlAgent implements AgentInterface
+class CurlClient implements ClientInterface
 {
     protected $last_response;
 
@@ -23,6 +23,7 @@ class CurlAgent implements AgentInterface
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => $endpoint,
+            CURLINFO_HEADER_OUT => true
         ]);
 
         return $this->getQueryResponse($curl);

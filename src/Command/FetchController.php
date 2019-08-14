@@ -12,7 +12,7 @@ use Dolphin\Model\DigitalOcean\Key;
 use Dolphin\Model\DigitalOcean\Region;
 use Dolphin\Model\DigitalOcean\Size;
 
-class AvailableController extends CommandController
+class FetchController extends CommandController
 {
     /** @var  Inventory */
     protected $inventory;

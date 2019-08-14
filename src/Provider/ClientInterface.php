@@ -1,12 +1,12 @@
 <?php
 /**
- * API Agent Interface
+ * Client Interface for interacting with DO API
  */
 
 namespace Dolphin\Provider;
 
 
-interface AgentInterface
+interface ClientInterface
 {
     public function get($endpoint, array $headers = []);
 

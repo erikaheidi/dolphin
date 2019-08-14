@@ -5,25 +5,27 @@
 
 namespace Dolphin;
 
-use Dolphin\Core\Config;
 use Dolphin\Core\FileCache;
 use Dolphin\Exception\APIException;
 use Dolphin\Exception\MissingArgumentException;
-use Dolphin\Provider\AgentInterface;
+use Dolphin\Provider\ClientInterface;
 
 class DigitalOcean
 {
-    /** @var  Config */
-    protected $config;
-    
-    /** @var  AgentInterface */
+    /** @var  ClientInterface */
     protected $agent;
 
     /** @var  FileCache */
     protected $cache;
 
-    /** @var  string/json */
+    /** @var  array  */
+    protected $config;
+
+    /** @var  string */
     protected $last_response;
+
+    /** @var  string DO API token */
+    private $api_token;
 
     /** @var string API endpoint for droplets */
     protected static $API_DROPLET = "https://api.digitalocean.com/v2/droplets";
@@ -35,15 +37,17 @@ class DigitalOcean
 
     /**
      * DigitalOcean constructor.
-     * @param Config $config
+     * @param string $api_token DO API token
+     * @param ClientInterface $agent
      * @param FileCache $cache
-     * @param AgentInterface $agent
+     * @param array $config Default configuration options
      */
-    public function __construct(Config $config, FileCache $cache, AgentInterface $agent)
+    public function __construct($api_token, ClientInterface $agent, FileCache $cache, array $config = [])
     {
-        $this->config = $config;
+        $this->api_token = $api_token;
         $this->cache = $cache;
         $this->agent = $agent;
+        $this->config = $config;
     }
 
     /**
@@ -180,11 +184,11 @@ class DigitalOcean
         }
         
         $params = array_merge([
-            'region'   => $this->config->D_REGION,
-            'size'     => $this->config->D_SIZE,
-            'image'    => $this->config->D_IMAGE,
-            'tags'     => $this->config->D_TAGS,
-            'ssh_keys' => $this->config->D_SSH_KEYS,
+            'region'   => $this->config['D_REGION'],
+            'size'     => $this->config['D_SIZE'],
+            'image'    => $this->config['D_IMAGE'],
+            'tags'     => $this->config['D_TAGS'],
+            'ssh_keys' => $this->config['D_SSH_KEYS'],
         ], $params);
 
         $response = $this->post(self::$API_DROPLET, $params);
@@ -280,10 +284,8 @@ class DigitalOcean
      */
     protected function getDefaultHeaders()
     {
-        $token = $this->config->DO_API_TOKEN;
-
         $headers[] = "Content-type: application/json";
-        $headers[] = "Authorization: Bearer $token";
+        $headers[] = "Authorization: Bearer $this->api_token";
 
         return $headers;
     }
