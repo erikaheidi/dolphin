@@ -12,6 +12,35 @@ use Dolphin\Model\DigitalOcean\Droplet;
 
 class DropletController extends CommandController
 {
+    static $server_animals = [
+        'panda',
+        'beaver',
+        'bear',
+        'seal',
+        'octopus',
+        'fox',
+        'rhinoceros',
+        'leopard',
+        'shark',
+        'llama',
+        'flamingo',
+    ];
+
+    static $server_personas = [
+        'ludicrous',
+        'sassy',
+        'delightful',
+        'exotic',
+        'gracious',
+        'fine',
+        'lovesome',
+        'scrumptious',
+        'jolly',
+        'cheerful',
+        'charming',
+        'righteous',
+    ];
+
     /**
      * Lists droplets
      * usage: ./dolphin droplet list
@@ -99,8 +128,7 @@ class DropletController extends CommandController
         $params = $this->parseArgs($arguments);
 
         if (!isset($params['name'])) {
-            $this->getPrinter()->error("You must provide a droplet name in the following format: name=MyDropletName.");
-            exit;
+            $params['name'] = self::$server_personas[array_rand(self::$server_personas)] . '-' . self::$server_animals[array_rand(self::$server_animals)];
         }
 
         $this->getPrinter()->info("Creating new Droplet...");

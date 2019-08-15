@@ -130,4 +130,12 @@ class Deployer
     {
         return $this->playbooks_folder . '/' . $deploy . '/' . $system . '.yml';
     }
+
+    /**
+     * @return string
+     */
+    public function getPlaybooksFolder()
+    {
+        return $this->playbooks_folder;
+    }
 }

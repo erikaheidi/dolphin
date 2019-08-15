@@ -23,10 +23,10 @@ class InventoryController extends CommandController
 
         if ($inventory === null) {
             $this->getPrinter()->error("ERROR: unable to create inventory.");
+            exit;
         }
 
         echo $inventory->output();
-        $this->getPrinter()->newline();
     }
 
     /**
@@ -41,7 +41,6 @@ class InventoryController extends CommandController
         }
 
         print $inventory->getJson();
-        $this->getPrinter()->newline();
     }
 
     public function getCommandMap()

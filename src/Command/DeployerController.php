@@ -7,7 +7,6 @@ namespace Dolphin\Command;
 
 use Dolphin\Provider\Ansible;
 use Dolphin\Core\CommandController;
-use Dolphin\Deployer;
 
 class DeployerController extends CommandController
 {
@@ -52,13 +51,13 @@ class DeployerController extends CommandController
         $deployer = $this->getDolphin()->getDeployer();
 
         $params = $this->parseArgs($arguments);
-        if (isset($params['remote_user'])) {
-            $deployer->setAnsibleUser($params['remote_user']);
+        if (isset($params['user'])) {
+            $deployer->setAnsibleUser($params['user']);
         }
 
         $deployer->ping($droplet);
     }
-    
+
     /**
      * dolphin deployer run lemp on droplet-name
      * @param array $arguments
@@ -75,13 +74,18 @@ class DeployerController extends CommandController
             $this->getPrinter()->error('The specified deploy is invalid or not available for the requested system.');
         }
 
+        $params = $this->parseArgs($arguments);
+        if (isset($params['user'])) {
+            $deployer->setAnsibleUser($params['user']);
+        }
+
         $deployer->runDeploy($deploy, $system, $target);
     }
 
     public function getCommandMap()
     {
         return [
-            'ansible-check' => 'defaultCommand',
+            'info' => 'defaultCommand',
             'list' => 'listScripts',
             'run'  => 'runDeploy',
             'ping' => 'ping',
@@ -90,6 +94,13 @@ class DeployerController extends CommandController
 
     public function defaultCommand()
     {
+        $this->getPrinter()->info('Ansible Version:');
         Ansible::version();
+
+        $this->getPrinter()->info('Playbooks Dir:');
+
+        $deployer = $this->getDolphin()->getDeployer();
+        $this->getPrinter()->out($deployer->getPlaybooksFolder(), 'info_alt');
+        $this->getPrinter()->newline();
     }
 }
