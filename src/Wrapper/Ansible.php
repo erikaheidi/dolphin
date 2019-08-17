@@ -1,9 +1,9 @@
 <?php
 /**
- * Static Ansible Wrapper
+ * Ansible Command Wrapper.
  */
 
-namespace Dolphin\Provider;
+namespace Dolphin\Wrapper;
 
 
 class Ansible

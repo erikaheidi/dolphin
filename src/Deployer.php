@@ -5,89 +5,55 @@
 
 namespace Dolphin;
 
-use Dolphin\Provider\Ansible;
+use Dolphin\Provider\AnsibleProvider;
 
 class Deployer
 {
     public static $DEFAULT_PLAYBOOK = 'default';
 
-    /** @var  string remote user */
-    protected $ansible_user;
-
-    /** @var  string Inventory file path */
-    protected $inventory;
-
-    /** @var  string Playbooks folder */
-    protected $playbooks_folder;
+    /** @var  AnsibleProvider */
+    protected $ansible_provider;
 
     /**
      * Deployer constructor.
-     * @param string $inventory
+     * @param string $inventory_path
      * @param string $playbooks_folder
      */
-    public function __construct($inventory, $playbooks_folder)
+    public function __construct($inventory_path, $playbooks_folder)
     {
-        $this->inventory = $inventory;
-        $this->playbooks_folder = $playbooks_folder;
+        $this->ansible_provider = new AnsibleProvider($inventory_path, $playbooks_folder);
     }
 
     /**
-     * @return string
+     * Sets the remote user
+     * @param $user
      */
-    public function getAnsibleUser()
+    public function setAnsibleUser($user)
     {
-        return $this->ansible_user;
+        $this->ansible_provider->setRemoteUser($user);
     }
 
     /**
-     * @param string $ansible_user
-     */
-    public function setAnsibleUser($ansible_user)
-    {
-        $this->ansible_user = $ansible_user;
-    }
-
-    /**
-     * Runs a Playbook
+     * Runs a Playbook / Deploy Script
      * @param $deploy
      * @param $system
      * @param $target
-     * @param array $connection_options
      */
-    public function runDeploy($deploy, $system, $target, array $connection_options = [])
+    public function runDeploy($deploy, $system, $target)
     {
         if ($this->playbookExists($deploy, $system)) {
             $playbook_file = $this->getPlaybookPath($deploy, $system);
-
-            $options = array_merge([
-                'ansible_user' => $this->getAnsibleUser(),
-            ], $connection_options);
-
-            Ansible::play($playbook_file, $target, $this->getInventory(), $options);
+            $this->ansible_provider->play($playbook_file, $target);
         }
     }
 
     /**
      * Pings a host
      * @param $target
-     * @param array $connection_options
      */
-    public function ping($target, array $connection_options = [])
+    public function ping($target)
     {
-        $options = array_merge([
-            'ansible_user' => $this->getAnsibleUser(),
-        ], $connection_options);
-
-        Ansible::ping($target,$this->getInventory(), $options);
-    }
-
-    /**
-     * Gets the Inventory File Path
-     * @return mixed
-     */
-    public function getInventory()
-    {
-        return $this->inventory;
+        $this->ansible_provider->ping($target);
     }
 
     /**
@@ -97,7 +63,7 @@ class Deployer
     {
         $scripts = [];
 
-        foreach (glob($this->playbooks_folder . '/*') as $deploy) {
+        foreach (glob($this->getPlaybooksFolder() . '/*') as $deploy) {
 
             $name = basename($deploy);
 
@@ -128,7 +94,7 @@ class Deployer
      */
     public function getPlaybookPath($deploy, $system)
     {
-        return $this->playbooks_folder . '/' . $deploy . '/' . $system . '.yml';
+        return $this->getPlaybooksFolder() . '/' . $deploy . '/' . $system . '.yml';
     }
 
     /**
@@ -136,6 +102,14 @@ class Deployer
      */
     public function getPlaybooksFolder()
     {
-        return $this->playbooks_folder;
+        return $this->ansible_provider->getPlaybooksFolder();
+    }
+
+    /**
+     * Shows the current Ansible version on the system
+     */
+    public function showAnsibleVersion()
+    {
+        $this->ansible_provider->getVersion();
     }
 }

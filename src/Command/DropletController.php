@@ -9,37 +9,10 @@ namespace Dolphin\Command;
 use Dolphin\Core\CommandController;
 use Dolphin\Exception\APIException;
 use Dolphin\Model\DigitalOcean\Droplet;
+use Dolphin\Provider\RandomNameProvider;
 
 class DropletController extends CommandController
 {
-    static $server_animals = [
-        'panda',
-        'beaver',
-        'bear',
-        'seal',
-        'octopus',
-        'fox',
-        'rhinoceros',
-        'leopard',
-        'shark',
-        'llama',
-        'flamingo',
-    ];
-
-    static $server_personas = [
-        'ludicrous',
-        'sassy',
-        'delightful',
-        'exotic',
-        'gracious',
-        'fine',
-        'lovesome',
-        'scrumptious',
-        'jolly',
-        'cheerful',
-        'charming',
-        'righteous',
-    ];
 
     /**
      * Lists droplets
@@ -128,7 +101,7 @@ class DropletController extends CommandController
         $params = $this->parseArgs($arguments);
 
         if (!isset($params['name'])) {
-            $params['name'] = self::$server_personas[array_rand(self::$server_personas)] . '-' . self::$server_animals[array_rand(self::$server_animals)];
+            $params['name'] = RandomNameProvider::getName();
         }
 
         $this->getPrinter()->info("Creating new Droplet...");

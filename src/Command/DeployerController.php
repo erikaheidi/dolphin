@@ -5,7 +5,6 @@
 
 namespace Dolphin\Command;
 
-use Dolphin\Provider\Ansible;
 use Dolphin\Core\CommandController;
 
 class DeployerController extends CommandController
@@ -85,22 +84,27 @@ class DeployerController extends CommandController
     public function getCommandMap()
     {
         return [
-            'info' => 'defaultCommand',
+            'info' => 'infoCommand',
             'list' => 'listScripts',
             'run'  => 'runDeploy',
             'ping' => 'ping',
         ];
     }
 
-    public function defaultCommand()
+    public function infoCommand()
     {
-        $this->getPrinter()->info('Ansible Version:');
-        Ansible::version();
-
-        $this->getPrinter()->info('Playbooks Dir:');
-
         $deployer = $this->getDolphin()->getDeployer();
+        
+        $this->getPrinter()->info('Ansible Version:');
+        $deployer->showAnsibleVersion();
+        
+        $this->getPrinter()->info('Playbooks Dir:');
         $this->getPrinter()->out($deployer->getPlaybooksFolder(), 'info_alt');
         $this->getPrinter()->newline();
+    }
+
+    public function defaultCommand()
+    {
+        $this->infoCommand();
     }
 }

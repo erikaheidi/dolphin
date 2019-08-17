@@ -1,11 +1,11 @@
 <?php
 /**
- * Simple Curl-based API Client / Agent
+ * Simple Curl-based API Client Provider
  */
 
 namespace Dolphin\Provider;
 
-class CurlClient implements ClientInterface
+class APIClientProvider implements APIClientInterface
 {
     protected $last_response;
 

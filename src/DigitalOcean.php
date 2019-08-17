@@ -8,11 +8,11 @@ namespace Dolphin;
 use Dolphin\Core\FileCache;
 use Dolphin\Exception\APIException;
 use Dolphin\Exception\MissingArgumentException;
-use Dolphin\Provider\ClientInterface;
+use Dolphin\Provider\APIClientInterface;
 
 class DigitalOcean
 {
-    /** @var  ClientInterface */
+    /** @var  APIClientInterface */
     protected $agent;
 
     /** @var  FileCache */
@@ -38,11 +38,11 @@ class DigitalOcean
     /**
      * DigitalOcean constructor.
      * @param string $api_token DO API token
-     * @param ClientInterface $agent
+     * @param APIClientInterface $agent
      * @param FileCache $cache
      * @param array $config Default configuration options
      */
-    public function __construct($api_token, ClientInterface $agent, FileCache $cache, array $config = [])
+    public function __construct($api_token, APIClientInterface $agent, FileCache $cache, array $config = [])
     {
         $this->api_token = $api_token;
         $this->cache = $cache;

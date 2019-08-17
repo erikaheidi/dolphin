@@ -6,7 +6,7 @@
 namespace Dolphin\Provider;
 
 
-interface ClientInterface
+interface APIClientInterface
 {
     public function get($endpoint, array $headers = []);
 

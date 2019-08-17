@@ -11,7 +11,7 @@ use Dolphin\Core\CLIPrinter;
 use Dolphin\Core\Config;
 use Dolphin\Core\CommandRegistry;
 use Dolphin\Core\FileCache;
-use Dolphin\Provider\CurlClient;
+use Dolphin\Provider\APIClientProvider;
 
 class Dolphin
 {
@@ -52,9 +52,9 @@ class Dolphin
         $this->printer = new CLIPrinter($this->getConfig()->THEME);
 
         // DO API
-        $this->do = new DigitalOcean($this->getConfig()->DO_API_TOKEN, new CurlClient(), $this->cache, $this->getConfig()->DO);
+        $this->do = new DigitalOcean($this->getConfig()->DO_API_TOKEN, new APIClientProvider(), $this->cache, $this->getConfig()->DO);
 
-        // Deployer (Ansible)
+        // Deployer
         $this->deployer = new Deployer(__DIR__ . '/../hosts.php', __DIR__ . '/../' . $this->getConfig()->PLAYBOOKS_DIR);
         $this->deployer->setAnsibleUser($this->getConfig()->ANSIBLE_USER);
     }
