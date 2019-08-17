@@ -56,7 +56,7 @@ class DropletController extends CommandController
      * Gets detailed information about a droplet.
      * usage: ./dolphin droplet info DROPLET_ID [force-update]
      */
-    public function infoDroplet()
+    public function infoDroplet(array $arguments)
     {
         $force_update = $this->flagExists('--force-update') ? 1 : 0;
 
@@ -64,7 +64,7 @@ class DropletController extends CommandController
             $force_update = -1;
         }
 
-        $droplet_id = $this->getParameters()[0];
+        $droplet_id = $arguments[0];
         if (!$droplet_id) {
             $this->getPrinter()->error("You must provide the droplet ID.");
             exit;
