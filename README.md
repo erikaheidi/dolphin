@@ -19,9 +19,11 @@
 
 # Dolphin
 
-Dolphin is a command line tool for managing (PHP) development environments on DigitalOcean servers, using Ansible to automate server setup.
+Dolphin is a command line tool created for quickly bootstrapping environments based on pre-defined models, using Ansible to automate server setup.
 
 It is built for **CLI ONLY**, in "vanilla" PHP, with no user-land library dependencies. Composer is required for setting up autoload, and Curl is required for the API work.
+
+Dolphin uses [DigitalOcean](https://digitalocean.com) as cloud provider.
 
 _Note: This is a WORK IN PROGRESS._
 
@@ -108,7 +110,7 @@ Now you can execute Dolphin with:
 
 For an overall look of commands and sub-commands, run `./dolphin.php help`.
 
-### Installing Globally (optional)
+### Installing Globally: (optional)
 
 If you'd like to use dolphin out of any directory in a global installation, you can do so by creating a symbolic link to the dolphin executable on `/usr/local/bin`. Please notice this will only work for your current user, who owns the `dolphin` directory.
 
@@ -116,7 +118,7 @@ If you'd like to use dolphin out of any directory in a global installation, you 
 sudo ln -s /usr/local/bin/dolphin /home/erika/Projects/dolphin/dolphin.php
 ```
 
-## Droplet Commands `dolphin droplet`
+## Droplet Commands: `dolphin droplet`
 
 The following commands can be used to manage droplets.
 
@@ -193,7 +195,7 @@ You can obtain the ID of a Droplet by running `droplet list` to list all your dr
 dolphin droplet destroy DROPLET_ID
 ```
 
-## Checking for Information `dolphin fetch`
+## Checking for Information: `dolphin fetch`
 
 To get a list of all available regions you can use when creating a new Droplet, use:
 
@@ -251,7 +253,7 @@ g-4vcpu-16gb 16384MB   4         50GB      5TB       $120
 To get a list of all registered SSH Keys you can use when creating a new Droplet, use:
 
 ```
-./dolphin fetch keys
+dolphin fetch keys
 ```
 
 ```
@@ -259,7 +261,10 @@ ID        NAME      FINGERPRINT
 23936699  heidislab e7:51:a3:7e:e1:11:1b:d1:69:8e:98:3d:45:5f:7f:14
 ```
 
-## Deployer Commands `dolphin deployer`
+## Deployer Commands: `dolphin deployer`
+
+The `deployer` module can be used to run set up remote servers using Ansible playbooks.
+A basic library of playbooks is included in the `playbooks` folder, but users are encouraged to create their own playbook library.
 
 ### Getting Ansible version
 
@@ -330,37 +335,35 @@ To optimize API querying and avoid hitting resource limits, Dolphin uses a simpl
 To force a cache update, include the flag `--force-update`:
 
 ```
-./dolphin droplet list --force-update
+dolphin droplet list --force-update
 ```
 
 If instead you'd like to enforce cache usage and not query for new results even if the cache timeout has been reached, you can use:
 
 ```
-./dolphin droplet list --force-cache
+dolphin droplet list --force-cache
 ```
 
-## Ansible Commands
+### Using the Dynamic Inventory Script with Ansible
 
-The following commands can be used to facilitate running Ansible on your droplets.
+If you'd like to use the dynamic inventory feature of Dolphin while running native Ansible commands and playbooks, you can use the included `hosts.php` dynamic inventory script, and you can also generate a static inventory file using the `dolphin inventory` command.
 
-### Using the included Dynamic Inventory Script
+#### Using the included Dynamic Inventory Script
 
 The included `hosts.php` script works as a dynamic inventory script that can be used directly with Ansible commands.
-This is the most convenient way to use Ansible with Dolphin.
-
 
 ```
 ansible all -m ping -i hosts.php
 ```
 
 
-### Building a static Inventory File
+#### Building a static Inventory File
 
 You can generate dynamic inventories in INI or JSON format. The inventory is dynamically built based on your current active droplets.
 
 To generate a JSON inventory, run:
 
-`./dolphin ansible inventory:json`
+`./dolphin ansible inventory json`
 
 Output:
 
@@ -407,7 +410,7 @@ Output:
 
 To generate an INI inventory, run:
 
-`./dolphin ansible inventory:ini`
+`./dolphin ansible inventory ini`
 
 Output:
 
@@ -422,7 +425,7 @@ test1 ansible_host=188.166.16.148
 ansible_python_interpreter=/usr/bin/python3
 ```
 
-If you want to use this as a static inventory file:
+If you want to save this as a static inventory file:
 
 ```
 ./dolphin ansible inventory > inventory
